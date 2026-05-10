@@ -1,0 +1,678 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserStatus {
+  ACTIVE
+  INVITED
+  SUSPENDED
+  DISABLED
+}
+
+enum PartnerStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  REJECTED
+}
+
+enum ParcelStatus {
+  BOOKED
+  PAYMENT_PENDING
+  READY_FOR_DROPOFF
+  RECEIVED_AT_ORIGIN_HUB
+  IN_MANIFEST
+  IN_TRANSIT
+  ARRIVED_AT_DESTINATION_HUB
+  OUT_FOR_DELIVERY
+  AVAILABLE_FOR_PICKUP
+  DELIVERED
+  FAILED_DELIVERY
+  RETURNING
+  RETURNED
+  CANCELLED
+  EXCEPTION
+}
+
+enum ServiceType {
+  HUB_TO_HUB
+  DOOR_TO_HUB
+  HUB_TO_DOOR
+  DOOR_TO_DOOR
+  INTERCITY_SCHEDULED
+}
+
+enum CustodyEventType {
+  BOOKED
+  HUB_RECEIVED
+  MANIFEST_ADDED
+  MANIFEST_REMOVED
+  MANIFEST_DEPARTED
+  MANIFEST_ARRIVED
+  HANDOVER_REQUESTED
+  HANDOVER_ACCEPTED
+  OUT_FOR_DELIVERY
+  DELIVERY_ATTEMPTED
+  PICKUP_COMPLETED
+  DELIVERY_COMPLETED
+  RETURN_TO_HUB
+  RETURN_TO_SENDER
+  EXCEPTION_RECORDED
+  ADMIN_OVERRIDE
+}
+
+enum ManifestStatus {
+  DRAFT
+  SEALED
+  DEPARTED
+  ARRIVED
+  RECONCILED
+  CANCELLED
+}
+
+enum ManifestType {
+  SWEEP
+  ROUTE
+  LINEHAUL
+}
+
+enum WalletTransactionType {
+  CREDIT
+  DEBIT
+  HOLD
+  RELEASE
+  REFUND
+  ADJUSTMENT
+}
+
+enum PaymentStatus {
+  PENDING
+  SUCCEEDED
+  FAILED
+  CANCELLED
+  REFUNDED
+}
+
+enum SettlementStatus {
+  PENDING
+  HELD
+  ELIGIBLE
+  APPROVED
+  PAID
+  DISPUTED
+  CANCELLED
+}
+
+enum NotificationChannel {
+  SMS
+  WHATSAPP
+  EMAIL
+  PUSH
+}
+
+enum NotificationStatus {
+  QUEUED
+  SENT
+  FAILED
+  CANCELLED
+}
+
+enum IdempotencyStatus {
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+enum JobStatus {
+  QUEUED
+  ACTIVE
+  COMPLETED
+  FAILED
+  RETRYING
+  CANCELLED
+}
+
+enum ExceptionStatus {
+  OPEN
+  IN_REVIEW
+  RESOLVED
+  REJECTED
+}
+
+enum RiskSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum AddressType {
+  CUSTOMER
+  MERCHANT
+  HUB
+  PARTNER_SHOP
+  PARCEL_SENDER
+  PARCEL_RECEIVER
+}
+
+model User {
+  id           String     @id @default(uuid())
+  publicId     String     @unique
+  email        String     @unique
+  phone        String?    @unique
+  passwordHash String
+  firstName    String
+  lastName     String
+  lastKnownLatitude  Decimal?
+  lastKnownLongitude Decimal?
+  status       UserStatus @default(ACTIVE)
+  roles        UserRole[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+}
+
+model Role {
+  id          String           @id @default(uuid())
+  name        String           @unique
+  description String?
+  users       UserRole[]
+  permissions RolePermission[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model Permission {
+  id        String           @id @default(uuid())
+  key       String           @unique
+  label     String
+  roles     RolePermission[]
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+model UserRole {
+  id        String   @id @default(uuid())
+  userId    String
+  roleId    String
+  user      User     @relation(fields: [userId], references: [id])
+  role      Role     @relation(fields: [roleId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, roleId])
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  role         Role       @relation(fields: [roleId], references: [id])
+  permission   Permission @relation(fields: [permissionId], references: [id])
+  createdAt    DateTime   @default(now())
+
+  @@unique([roleId, permissionId])
+}
+
+model Country {
+  id        String   @id @default(uuid())
+  name      String
+  code      String   @unique
+  states    State[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model State {
+  id        String   @id @default(uuid())
+  countryId String
+  name      String
+  code      String
+  country   Country  @relation(fields: [countryId], references: [id])
+  cities    City[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([countryId, code])
+}
+
+model City {
+  id         String      @id @default(uuid())
+  stateId    String
+  name       String
+  code       String
+  state      State       @relation(fields: [stateId], references: [id])
+  localAreas LocalArea[]
+  hubs       Hub[]
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+
+  @@unique([stateId, code])
+}
+
+model LocalArea {
+  id        String   @id @default(uuid())
+  cityId    String
+  name      String
+  code      String
+  city      City     @relation(fields: [cityId], references: [id])
+  hubs      Hub[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([cityId, code])
+}
+
+model Hub {
+  id          String   @id @default(uuid())
+  cityId      String
+  localAreaId String?
+  name        String
+  code        String   @unique
+  isActive    Boolean  @default(true)
+  city        City     @relation(fields: [cityId], references: [id])
+  localArea   LocalArea? @relation(fields: [localAreaId], references: [id])
+  addresses   Address[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Customer {
+  id        String   @id @default(uuid())
+  publicId  String   @unique
+  userId    String?  @unique
+  fullName  String
+  phone     String
+  email     String?
+  addresses Address[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Merchant {
+  id          String   @id @default(uuid())
+  publicId    String   @unique
+  name        String
+  code        String   @unique
+  contactName String
+  phone       String
+  email       String?
+  creditLimit Decimal  @default(0)
+  isActive    Boolean  @default(true)
+  addresses   Address[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model PartnerShop {
+  id          String        @id @default(uuid())
+  hubId       String?
+  name        String
+  code        String        @unique
+  contactName String
+  phone       String
+  status      PartnerStatus @default(PENDING)
+  addresses   Address[]
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model Address {
+  id               String      @id @default(uuid())
+  type             AddressType
+  label            String?
+  contactName      String?
+  contactPhone     String?
+  line1            String
+  line2            String?
+  cityId           String?
+  localAreaId      String?
+  freeformCity     String?
+  freeformState    String?
+  postcode         String?
+  latitude         Decimal?
+  longitude        Decimal?
+  customerId       String?
+  merchantId       String?
+  hubId            String?
+  partnerShopId    String?
+  senderParcelId   String?     @unique
+  receiverParcelId String?     @unique
+  customer         Customer?   @relation(fields: [customerId], references: [id])
+  merchant         Merchant?   @relation(fields: [merchantId], references: [id])
+  hub              Hub?        @relation(fields: [hubId], references: [id])
+  partnerShop      PartnerShop? @relation(fields: [partnerShopId], references: [id])
+  senderParcel     Parcel?     @relation("ParcelSenderAddress", fields: [senderParcelId], references: [id])
+  receiverParcel   Parcel?     @relation("ParcelReceiverAddress", fields: [receiverParcelId], references: [id])
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+}
+
+model PartnerVehicle {
+  id             String        @id @default(uuid())
+  partnerShopId  String?
+  plateNumber    String        @unique
+  make           String?
+  model          String?
+  capacityKg     Decimal?
+  status         PartnerStatus @default(PENDING)
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+}
+
+model Driver {
+  id        String        @id @default(uuid())
+  userId    String?       @unique
+  fullName  String
+  phone     String        @unique
+  status    PartnerStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+}
+
+model PricingRule {
+  id             String      @id @default(uuid())
+  serviceType    ServiceType
+  originCityId   String?
+  destinationCityId String?
+  basePrice      Decimal
+  pricePerKg     Decimal     @default(0)
+  pricePerKm     Decimal     @default(0)
+  isActive       Boolean     @default(true)
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
+
+model Parcel {
+  id               String       @id @default(uuid())
+  waybillNumber    String       @unique
+  trackingCode     String       @unique
+  senderCustomerId String?
+  merchantId       String?
+  originHubId      String?
+  destinationHubId String?
+  serviceType      ServiceType
+  status           ParcelStatus @default(BOOKED)
+  senderName       String
+  senderPhone      String
+  senderAddress    Address?     @relation("ParcelSenderAddress")
+  receiverName     String
+  receiverPhone    String
+  receiverAddress  Address?     @relation("ParcelReceiverAddress")
+  declaredValue    Decimal      @default(0)
+  weightKg         Decimal
+  volumetricWeightKg Decimal?
+  price            Decimal      @default(0)
+  metadata         Json?
+  items            ParcelItem[]
+  custodyEvents    CustodyEvent[]
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+}
+
+model ParcelItem {
+  id          String   @id @default(uuid())
+  parcelId    String
+  description String
+  quantity    Int      @default(1)
+  value       Decimal  @default(0)
+  parcel      Parcel   @relation(fields: [parcelId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CustodyEvent {
+  id           String           @id @default(uuid())
+  parcelId     String
+  actorId      String?
+  hubId        String?
+  manifestId   String?
+  eventType    CustodyEventType
+  notes        String?
+  evidence     Json?
+  validation   Json?
+  occurredAt   DateTime
+  parcel       Parcel           @relation(fields: [parcelId], references: [id])
+  createdAt    DateTime         @default(now())
+}
+
+model Route {
+  id        String      @id @default(uuid())
+  name      String
+  code      String      @unique
+  isActive  Boolean     @default(true)
+  stops     RouteStop[]
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+}
+
+model RouteStop {
+  id        String   @id @default(uuid())
+  routeId   String
+  hubId     String
+  sequence  Int
+  route     Route    @relation(fields: [routeId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([routeId, sequence])
+}
+
+model Manifest {
+  id          String           @id @default(uuid())
+  manifestNo  String           @unique
+  type        ManifestType
+  status      ManifestStatus   @default(DRAFT)
+  routeId     String?
+  originHubId String?
+  destinationHubId String?
+  driverId    String?
+  vehicleId   String?
+  sealNumber  String?
+  parcels     ManifestParcel[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model ManifestParcel {
+  id         String   @id @default(uuid())
+  manifestId String
+  parcelId   String
+  manifest   Manifest @relation(fields: [manifestId], references: [id])
+  createdAt  DateTime @default(now())
+
+  @@unique([manifestId, parcelId])
+}
+
+model DeliveryAttempt {
+  id          String   @id @default(uuid())
+  parcelId    String
+  actorId     String?
+  successful  Boolean  @default(false)
+  reason      String?
+  proof       Json?
+  attemptedAt DateTime
+  createdAt   DateTime @default(now())
+}
+
+model PickupOtp {
+  id          String   @id @default(uuid())
+  parcelId    String
+  codeHash    String
+  expiresAt   DateTime
+  usedAt      DateTime?
+  createdAt   DateTime @default(now())
+}
+
+model Wallet {
+  id          String              @id @default(uuid())
+  customerId  String?
+  merchantId  String?
+  balance     Decimal             @default(0)
+  currency    String              @default("NGN")
+  transactions WalletTransaction[]
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+model WalletTransaction {
+  id          String                @id @default(uuid())
+  walletId    String
+  type        WalletTransactionType
+  amount      Decimal
+  reference   String                @unique
+  description String?
+  wallet      Wallet                @relation(fields: [walletId], references: [id])
+  createdAt   DateTime              @default(now())
+}
+
+model Payment {
+  id          String        @id @default(uuid())
+  reference   String        @unique
+  parcelId    String?
+  walletId    String?
+  amount      Decimal
+  currency    String        @default("NGN")
+  status      PaymentStatus @default(PENDING)
+  provider    String?
+  providerRef String?
+  metadata    Json?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+}
+
+model SettlementEntry {
+  id          String           @id @default(uuid())
+  partnerId   String
+  parcelId    String?
+  manifestId  String?
+  amount      Decimal
+  status      SettlementStatus @default(PENDING)
+  reason      String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model NotificationMessage {
+  id          String              @id @default(uuid())
+  channel     NotificationChannel
+  recipient   String
+  templateKey String
+  payload     Json
+  status      NotificationStatus  @default(QUEUED)
+  attempts    Int                 @default(0)
+  lastError   String?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+}
+
+model SyncDevice {
+  id         String   @id @default(uuid())
+  deviceKey  String   @unique
+  actorId    String?
+  label      String?
+  lastSeenAt DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}
+
+model SyncBatch {
+  id             String   @id @default(uuid())
+  deviceId       String
+  idempotencyKey String   @unique
+  eventCount     Int
+  acceptedCount  Int      @default(0)
+  rejectedCount  Int      @default(0)
+  payloadHash    String
+  createdAt      DateTime @default(now())
+}
+
+model IdempotencyKey {
+  id           String            @id @default(uuid())
+  lookupKey    String            @unique
+  actorId      String?
+  scope        String
+  requestHash  String
+  status       IdempotencyStatus @default(PROCESSING)
+  responseCode Int?
+  responseBody Json?
+  expiresAt    DateTime
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+model JobRun {
+  id          String    @id @default(uuid())
+  queueName   String
+  jobName     String
+  jobId       String
+  status      JobStatus @default(QUEUED)
+  attempts    Int       @default(0)
+  payload     Json?
+  lastError   String?
+  startedAt   DateTime?
+  finishedAt  DateTime?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([queueName, jobId])
+}
+
+model SystemHealthEvent {
+  id        String   @id @default(uuid())
+  component String
+  status    String
+  details   Json?
+  createdAt DateTime @default(now())
+}
+
+model ExceptionCase {
+  id          String          @id @default(uuid())
+  parcelId    String?
+  type        String
+  status      ExceptionStatus @default(OPEN)
+  description String
+  assignedTo  String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model Claim {
+  id              String          @id @default(uuid())
+  exceptionCaseId String?
+  claimantName    String
+  claimantPhone   String
+  amount          Decimal         @default(0)
+  status          ExceptionStatus @default(OPEN)
+  evidence        Json?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+}
+
+model RiskFlag {
+  id          String       @id @default(uuid())
+  parcelId    String?
+  actorId     String?
+  severity    RiskSeverity
+  reason      String
+  metadata    Json?
+  reviewedAt  DateTime?
+  reviewedBy  String?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+}
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  actorId    String?
+  action     String
+  entityType String
+  entityId   String?
+  reason     String?
+  before     Json?
+  after      Json?
+  createdAt  DateTime @default(now())
+}
