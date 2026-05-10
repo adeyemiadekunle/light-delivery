@@ -748,6 +748,47 @@ Run: `cd backend && npm test -- hubs.service.spec.ts`
 
 Expected: PASS.
 
+## Task 6A: Build Customer and Merchant Modules
+
+**Files:**
+- Create: `backend/src/addresses/dto/create-address.dto.ts`
+- Create: `backend/src/customers/customers.module.ts`
+- Create: `backend/src/customers/customers.controller.ts`
+- Create: `backend/src/customers/customers.service.ts`
+- Create: `backend/src/customers/customers.service.spec.ts`
+- Create: `backend/src/customers/dto/create-customer.dto.ts`
+- Create: `backend/src/merchants/merchants.module.ts`
+- Create: `backend/src/merchants/merchants.controller.ts`
+- Create: `backend/src/merchants/merchants.service.ts`
+- Create: `backend/src/merchants/merchants.service.spec.ts`
+- Create: `backend/src/merchants/dto/create-merchant.dto.ts`
+- Modify: `backend/src/app.module.ts`
+
+- [ ] **Step 1: Write failing service mapping tests**
+
+Customer creation must generate a `CUS-` public id and nest address creation under the customer.
+
+Merchant creation must generate a `BUS-` public id and nest address creation under the merchant.
+
+- [ ] **Step 2: Implement customer module**
+
+Create `CustomersService`, `CustomersController`, and `CustomersModule`. The service should expose `buildCreateData`, `create`, and `list`.
+
+- [ ] **Step 3: Implement merchant module**
+
+Create `MerchantsService`, `MerchantsController`, and `MerchantsModule`. The service should expose `buildCreateData`, `create`, and `list`.
+
+- [ ] **Step 4: Wire modules into AppModule and verify**
+
+Run:
+
+```bash
+cd backend
+npm test -- customers.service.spec.ts
+npm test -- merchants.service.spec.ts
+npm run build
+```
+
 ## Task 7: Build Parcel Booking, Pricing, and Tracking
 
 **Files:**

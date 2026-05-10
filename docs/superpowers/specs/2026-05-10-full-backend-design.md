@@ -46,6 +46,8 @@ Customer address records support optional postcode, optional latitude, and optio
 
 `Customer` is the personal sender/receiver profile. A customer may be linked to a user account, but keeping it separate lets the platform support assisted bookings, receivers who never log in, and future cases where one login manages multiple profiles.
 
+The customer module must create customer public ids and can attach one or more first-class address records to the customer profile.
+
 ### Merchants
 
 Handles business accounts, merchant users, business profiles, credit eligibility, volume rules, reporting access, and business address books.
@@ -53,6 +55,8 @@ Handles business accounts, merchant users, business profiles, credit eligibility
 Business accounts must have private internal UUID ids and separate non-sequential public business ids. Business addresses support optional postcode and optional GPS coordinates.
 
 `Merchant` is the business account: credit terms, business reporting, staff users, bulk rules, and settlement-facing identity. It stays separate from `User` because a business can have many users and one user may later belong to multiple businesses.
+
+The merchant module must create business public ids and can attach one or more first-class address records to the business account.
 
 ### Addresses
 
