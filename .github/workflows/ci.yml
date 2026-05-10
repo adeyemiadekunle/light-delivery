@@ -1,0 +1,85 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - stage
+  pull_request:
+    branches:
+      - main
+      - stage
+
+jobs:
+  backend:
+    name: Backend
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: light_delivery_test
+          POSTGRES_USER: light_delivery
+          POSTGRES_PASSWORD: light_delivery_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U light_delivery -d light_delivery_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    defaults:
+      run:
+        working-directory: backend
+
+    env:
+      DATABASE_URL: postgresql://light_delivery:light_delivery_password@localhost:5432/light_delivery_test?schema=public
+      REDIS_HOST: localhost
+      REDIS_PORT: 6379
+      JWT_ACCESS_SECRET: ci-access-secret
+      JWT_REFRESH_SECRET: ci-refresh-secret
+      SKIP_PRISMA_CONNECT: "true"
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npm run prisma:generate
+
+      - name: Apply migrations
+        run: npm run prisma:migrate:deploy
+
+      - name: Run unit tests
+        run: npm test
+
+      - name: Run e2e tests
+        run: npm run test:e2e
+
+      - name: Build backend
+        run: npm run build
+
+      - name: Build Docker image
+        run: docker build -t light-delivery-backend:${{ github.sha }} .

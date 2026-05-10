@@ -50,3 +50,13 @@ Health endpoints:
 
 - `GET /api/v1/health/live`
 - `GET /api/v1/health/version`
+
+## Docker
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+This starts PostgreSQL, Redis, runs Prisma migrations, and starts the API.
