@@ -4,7 +4,6 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("DATABASE_URL")
 }
 
 enum UserStatus {
@@ -158,6 +157,23 @@ enum AddressType {
   PARTNER_SHOP
   PARCEL_SENDER
   PARCEL_RECEIVER
+}
+
+enum ComplianceDocumentType {
+  BUSINESS_REGISTRATION
+  GOVERNMENT_ID
+  VEHICLE_INSURANCE
+  ROADWORTHINESS
+  VEHICLE_LICENSE
+  DRIVER_LICENSE
+  OTHER
+}
+
+enum ComplianceDocumentStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  EXPIRED
 }
 
 model User {
@@ -316,6 +332,8 @@ model PartnerShop {
   phone       String
   status      PartnerStatus @default(PENDING)
   addresses   Address[]
+  vehicles    PartnerVehicle[]
+  documents   PartnerDocument[]
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 }
@@ -359,6 +377,8 @@ model PartnerVehicle {
   model          String?
   capacityKg     Decimal?
   status         PartnerStatus @default(PENDING)
+  partnerShop    PartnerShop?  @relation(fields: [partnerShopId], references: [id])
+  documents      PartnerDocument[]
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
 }
@@ -369,8 +389,29 @@ model Driver {
   fullName  String
   phone     String        @unique
   status    PartnerStatus @default(PENDING)
+  documents PartnerDocument[]
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
+}
+
+model PartnerDocument {
+  id               String                   @id @default(uuid())
+  type             ComplianceDocumentType
+  status           ComplianceDocumentStatus @default(PENDING)
+  documentNumber   String?
+  storageKey       String?
+  fileName         String?
+  issuedAt         DateTime?
+  expiresAt        DateTime?
+  notes            String?
+  partnerShopId    String?
+  partnerVehicleId String?
+  driverId         String?
+  partnerShop      PartnerShop?             @relation(fields: [partnerShopId], references: [id])
+  partnerVehicle   PartnerVehicle?          @relation(fields: [partnerVehicleId], references: [id])
+  driver           Driver?                  @relation(fields: [driverId], references: [id])
+  createdAt        DateTime                 @default(now())
+  updatedAt        DateTime                 @updatedAt
 }
 
 model PricingRule {

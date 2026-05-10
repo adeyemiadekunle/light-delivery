@@ -12,6 +12,7 @@ import { MerchantsModule } from './merchants/merchants.module';
 import { MonitoringModule } from './monitoring/monitoring.module';
 import { NetworkModule } from './network/network.module';
 import { ParcelsModule } from './parcels/parcels.module';
+import { PartnersModule } from './partners/partners.module';
 import { PrismaModule } from './prisma/prisma.module';
 
 @Module({
@@ -30,6 +31,7 @@ import { PrismaModule } from './prisma/prisma.module';
     MonitoringModule,
     NetworkModule,
     ParcelsModule,
+    PartnersModule,
     PrismaModule,
   ],
   controllers: [AppController],

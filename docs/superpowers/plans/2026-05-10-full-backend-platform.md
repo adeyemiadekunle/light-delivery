@@ -789,6 +789,61 @@ npm test -- merchants.service.spec.ts
 npm run build
 ```
 
+## Task 6B: Build Partner Shop, Vehicle, Driver, and Compliance Modules
+
+**Files:**
+- Modify: `backend/prisma/schema.prisma`
+- Create: `backend/prisma/migrations/<timestamp>_partner_compliance/migration.sql`
+- Create: `backend/src/partners/partners.module.ts`
+- Create: `backend/src/partners/partners.controller.ts`
+- Create: `backend/src/partners/partner-shops.service.ts`
+- Create: `backend/src/partners/partner-vehicles.service.ts`
+- Create: `backend/src/partners/drivers.service.ts`
+- Create: `backend/src/partners/compliance-documents.mapper.ts`
+- Create: `backend/src/partners/dto/create-compliance-document.dto.ts`
+- Create: `backend/src/partners/dto/create-partner-shop.dto.ts`
+- Create: `backend/src/partners/dto/create-partner-vehicle.dto.ts`
+- Create: `backend/src/partners/dto/create-driver.dto.ts`
+- Test: `backend/src/partners/partner-shops.service.spec.ts`
+- Test: `backend/src/partners/partner-vehicles.service.spec.ts`
+- Test: `backend/src/partners/drivers.service.spec.ts`
+- Modify: `backend/src/app.module.ts`
+
+- [ ] **Step 1: Write failing partner service tests**
+
+Partner shop creation must support address records and compliance document records.
+
+Partner vehicle creation must support partner-shop connection and compliance document records.
+
+Driver creation must support compliance document records.
+
+- [ ] **Step 2: Add compliance schema**
+
+Add compliance document enums and `PartnerDocument`, with optional ownership links to partner shop, partner vehicle, and driver.
+
+- [ ] **Step 3: Implement partner modules**
+
+Create DTOs, services, controller routes, and `PartnersModule`. Expose:
+
+- `POST /api/v1/partners/shops`
+- `GET /api/v1/partners/shops`
+- `POST /api/v1/partners/vehicles`
+- `GET /api/v1/partners/vehicles`
+- `POST /api/v1/partners/drivers`
+- `GET /api/v1/partners/drivers`
+
+- [ ] **Step 4: Verify**
+
+Run:
+
+```bash
+cd backend
+npm run prisma:generate
+npm test
+npm run test:e2e
+npm run build
+```
+
 ## Task 7: Build Parcel Booking, Pricing, and Tracking
 
 **Files:**
