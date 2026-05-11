@@ -1,11 +1,17 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../identity/guards/jwt-auth.guard';
+import {
+  RequirePublicIdAccess,
+  ScopedPublicIdGuard,
+} from '../identity/guards/scoped-public-id.guard';
 import { CreateDriverDto } from './dto/create-driver.dto';
 import { CreatePartnerShopDto } from './dto/create-partner-shop.dto';
 import { CreatePartnerVehicleDto } from './dto/create-partner-vehicle.dto';
@@ -63,5 +69,15 @@ export class PartnersController {
   @Get('drivers')
   listDrivers() {
     return this.driversService.list();
+  }
+
+  @ApiOperation({ summary: 'Get a driver profile by public id' })
+  @ApiParam({ name: 'publicId', description: 'Driver public id' })
+  @ApiOkResponse({ description: 'Driver public profile' })
+  @RequirePublicIdAccess('driver')
+  @UseGuards(JwtAuthGuard, ScopedPublicIdGuard)
+  @Get('drivers/:publicId')
+  getDriver(@Param('publicId') publicId: string) {
+    return this.driversService.findPublicProfileByPublicId(publicId);
   }
 }

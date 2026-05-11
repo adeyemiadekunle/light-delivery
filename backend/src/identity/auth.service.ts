@@ -25,6 +25,7 @@ export class AuthService {
     const roles = user.roles.map((entry) => entry.role.name);
     const accessToken = await this.jwtService.signAsync({
       sub: user.id,
+      publicId: user.publicId,
       email: user.email,
       roles,
     });
@@ -32,7 +33,7 @@ export class AuthService {
     return {
       accessToken,
       user: {
-        id: user.id,
+        publicId: user.publicId,
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,

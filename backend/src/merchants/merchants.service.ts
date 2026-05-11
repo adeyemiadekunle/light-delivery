@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { AddressType, Prisma } from '@prisma/client';
 import { PublicIdService } from '../common/ids/public-id.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -46,5 +46,26 @@ export class MerchantsService {
       include: { addresses: true },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  async findPublicProfileByPublicId(publicId: string) {
+    const merchant = await this.prisma.merchant.findUnique({
+      where: { publicId },
+      select: {
+        publicId: true,
+        name: true,
+        code: true,
+        contactName: true,
+        phone: true,
+        email: true,
+        isActive: true,
+      },
+    });
+
+    if (!merchant) {
+      throw new NotFoundException('Business was not found');
+    }
+
+    return merchant;
   }
 }

@@ -21,7 +21,8 @@
 - [x] Require `localAreaId` for hubs so hubs can be grouped by service area.
 - [x] Add ESLint and Prettier checks to backend CI.
 - [x] Add Swagger UI, OpenAPI JSON, bearer auth metadata, controller tags, operation summaries, and DTO schemas.
-- [ ] Build session/JWT guards that scope `/me`, business, hub, and driver routes by public id plus authenticated role/assignment.
+- [x] Build session/JWT guards that scope `/me`, business, hub, and driver routes by public id plus authenticated role/assignment.
+- [ ] Add persistent business-user, hub-staff, and driver-assignment membership tables so scoped JWT claims can be issued from database assignments.
 - [ ] Build manifest, route, pricing, wallet, settlement, notifications, offline sync, exceptions, risk, and admin modules.
 
 ---

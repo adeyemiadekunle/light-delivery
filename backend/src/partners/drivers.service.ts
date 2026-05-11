@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PublicIdService } from '../common/ids/public-id.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -34,5 +34,23 @@ export class DriversService {
       include: { documents: true },
       orderBy: { createdAt: 'desc' },
     });
+  }
+
+  async findPublicProfileByPublicId(publicId: string) {
+    const driver = await this.prisma.driver.findUnique({
+      where: { publicId },
+      select: {
+        publicId: true,
+        fullName: true,
+        phone: true,
+        status: true,
+      },
+    });
+
+    if (!driver) {
+      throw new NotFoundException('Driver was not found');
+    }
+
+    return driver;
   }
 }

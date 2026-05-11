@@ -84,4 +84,31 @@ describe('HubsService', () => {
       },
     });
   });
+
+  it('finds a public hub profile by public id without exposing internal ids', async () => {
+    const service = new HubsService(
+      {
+        hub: {
+          findUnique: jest.fn().mockResolvedValue({
+            publicId: 'HUB-TEST000000',
+            name: 'Ikeja Hub',
+            code: 'LOS-IKEJA',
+            cityId: 'city-1',
+            localAreaId: 'local-area-1',
+            isActive: true,
+          }),
+        },
+      } as never,
+      publicIds as never,
+    );
+
+    await expect(service.findPublicProfileByPublicId('HUB-TEST000000')).resolves.toEqual({
+      publicId: 'HUB-TEST000000',
+      name: 'Ikeja Hub',
+      code: 'LOS-IKEJA',
+      cityId: 'city-1',
+      localAreaId: 'local-area-1',
+      isActive: true,
+    });
+  });
 });

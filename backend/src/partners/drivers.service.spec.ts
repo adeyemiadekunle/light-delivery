@@ -37,4 +37,27 @@ describe('DriversService', () => {
       },
     });
   });
+
+  it('finds a public driver profile by public id without exposing internal ids', async () => {
+    const service = new DriversService(
+      {
+        driver: {
+          findUnique: jest.fn().mockResolvedValue({
+            publicId: 'DRV-TEST000000',
+            fullName: 'Tunde Ade',
+            phone: '08031111111',
+            status: 'ACTIVE',
+          }),
+        },
+      } as never,
+      publicIds as never,
+    );
+
+    await expect(service.findPublicProfileByPublicId('DRV-TEST000000')).resolves.toEqual({
+      publicId: 'DRV-TEST000000',
+      fullName: 'Tunde Ade',
+      phone: '08031111111',
+      status: 'ACTIVE',
+    });
+  });
 });

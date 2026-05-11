@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { AddressType, Prisma } from '@prisma/client';
 import { PublicIdService } from '../common/ids/public-id.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -66,5 +66,25 @@ export class HubsService {
     return this.prisma.hub.findMany({
       orderBy: { name: 'asc' },
     });
+  }
+
+  async findPublicProfileByPublicId(publicId: string) {
+    const hub = await this.prisma.hub.findUnique({
+      where: { publicId },
+      select: {
+        publicId: true,
+        name: true,
+        code: true,
+        cityId: true,
+        localAreaId: true,
+        isActive: true,
+      },
+    });
+
+    if (!hub) {
+      throw new NotFoundException('Hub was not found');
+    }
+
+    return hub;
   }
 }

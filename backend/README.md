@@ -60,6 +60,13 @@ API documentation:
 
 The OpenAPI document includes bearer auth, current controller routes, and DTO schemas for request bodies.
 
+Session-scoped endpoints:
+
+- `GET /api/v1/me`
+- `GET /api/v1/businesses/:publicId`
+- `GET /api/v1/hubs/:publicId`
+- `GET /api/v1/partners/drivers/:publicId`
+
 ## Docker
 
 From the repository root:
