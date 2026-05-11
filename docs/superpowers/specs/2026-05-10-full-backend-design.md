@@ -74,7 +74,7 @@ Local hubs should support GPS latitude and longitude because customers, drivers,
 
 Handles partner shops, partner vans, drivers, KYC records, compliance documents, insurance details, vehicle records, contract status, suspension status, and operational eligibility.
 
-Partner shops can have first-class address records and compliance documents such as business registration or government ID. Partner vehicles can belong to partner shops and carry vehicle insurance, roadworthiness, and license documents. Drivers can be linked to platform users later and must support driver-license and identity documents. Compliance documents start as pending and can be verified, rejected, or marked expired by operations/risk teams.
+Partner shops can have first-class address records and compliance documents such as business registration or government ID. Each partner shop can be linked to its controlling hub so operations can group partner pickup/drop-off points under a hub. Partner vehicles can belong to partner shops and carry vehicle insurance, roadworthiness, and license documents. Drivers can be linked to platform users later and must support driver-license and identity documents. Compliance documents start as pending and can be verified, rejected, or marked expired by operations/risk teams.
 
 ### Pricing
 

@@ -5,7 +5,7 @@ describe('PartnerShopsService', () => {
     generatePartnerShopId: () => 'PSH-TEST000000',
   };
 
-  it('builds partner shop create data with address and compliance documents', () => {
+  it('builds partner shop create data with a hub relation, address, and compliance documents', () => {
     const service = new PartnerShopsService({} as never, publicIds as never);
 
     expect(
@@ -34,7 +34,11 @@ describe('PartnerShopsService', () => {
       code: 'PS-IKJ-001',
       contactName: 'Amina Bello',
       phone: '08030000000',
-      hubId: 'hub-1',
+      hub: {
+        connect: {
+          id: 'hub-1',
+        },
+      },
       addresses: {
         create: [
           {

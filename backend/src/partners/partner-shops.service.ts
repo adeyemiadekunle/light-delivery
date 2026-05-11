@@ -19,7 +19,15 @@ export class PartnerShopsService {
       code: input.code,
       contactName: input.contactName,
       phone: input.phone,
-      hubId: input.hubId,
+      ...(input.hubId
+        ? {
+            hub: {
+              connect: {
+                id: input.hubId,
+              },
+            },
+          }
+        : {}),
       ...(input.address
         ? {
             addresses: {
@@ -39,13 +47,13 @@ export class PartnerShopsService {
   create(input: CreatePartnerShopDto) {
     return this.prisma.partnerShop.create({
       data: this.buildCreateData(input),
-      include: { addresses: true, documents: true },
+      include: { addresses: true, documents: true, hub: true },
     });
   }
 
   list() {
     return this.prisma.partnerShop.findMany({
-      include: { addresses: true, documents: true },
+      include: { addresses: true, documents: true, hub: true },
       orderBy: { createdAt: 'desc' },
     });
   }
