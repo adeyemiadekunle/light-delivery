@@ -17,7 +17,15 @@ export class DriversService {
       publicId: this.publicIds.generateDriverId(),
       fullName: input.fullName,
       phone: input.phone,
-      userId: input.userId,
+      ...(input.userId
+        ? {
+            user: {
+              connect: {
+                id: input.userId,
+              },
+            },
+          }
+        : {}),
       ...buildComplianceDocumentCreates(input.documents),
     } satisfies Prisma.DriverCreateInput;
   }

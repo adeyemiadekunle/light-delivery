@@ -236,7 +236,7 @@ External-facing URLs should follow this rule:
 
 The public id is only a locator. Authorization must always come from the authenticated session context.
 
-The initial implementation supports `/me`, `/businesses/:publicId`, `/hubs/:publicId`, and `/partners/drivers/:publicId` using bearer JWT verification and public-id scope claims. Persistent membership tables for business users, hub staff, and driver assignments must back those claims before customer-facing rollout.
+The initial implementation supports `/me`, `/businesses/:publicId`, `/hubs/:publicId`, and `/partners/drivers/:publicId` using bearer JWT verification and public-id scope claims. Business-user, hub-staff, and driver-assignment tables back those claims. Admin APIs must manage assignment lifecycle, suspension, and audit before customer-facing rollout.
 
 Operational endpoints should include health and monitoring surfaces for internal use:
 

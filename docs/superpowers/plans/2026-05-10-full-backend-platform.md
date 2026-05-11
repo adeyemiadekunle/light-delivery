@@ -22,7 +22,8 @@
 - [x] Add ESLint and Prettier checks to backend CI.
 - [x] Add Swagger UI, OpenAPI JSON, bearer auth metadata, controller tags, operation summaries, and DTO schemas.
 - [x] Build session/JWT guards that scope `/me`, business, hub, and driver routes by public id plus authenticated role/assignment.
-- [ ] Add persistent business-user, hub-staff, and driver-assignment membership tables so scoped JWT claims can be issued from database assignments.
+- [x] Add persistent business-user, hub-staff, and driver-assignment membership tables so scoped JWT claims can be issued from database assignments.
+- [ ] Add admin APIs to create, suspend, and audit business-user, hub-staff, and driver assignments.
 - [ ] Build manifest, route, pricing, wallet, settlement, notifications, offline sync, exceptions, risk, and admin modules.
 
 ---

@@ -178,19 +178,23 @@ enum ComplianceDocumentStatus {
 }
 
 model User {
-  id                 String     @id @default(uuid())
-  publicId           String     @unique
-  email              String     @unique
-  phone              String?    @unique
-  passwordHash       String
-  firstName          String
-  lastName           String
-  lastKnownLatitude  Decimal?
-  lastKnownLongitude Decimal?
-  status             UserStatus @default(ACTIVE)
-  roles              UserRole[]
-  createdAt          DateTime   @default(now())
-  updatedAt          DateTime   @updatedAt
+  id                  String             @id @default(uuid())
+  publicId            String             @unique
+  email               String             @unique
+  phone               String?            @unique
+  passwordHash        String
+  firstName           String
+  lastName            String
+  lastKnownLatitude   Decimal?
+  lastKnownLongitude  Decimal?
+  status              UserStatus         @default(ACTIVE)
+  roles               UserRole[]
+  merchantMemberships MerchantUser[]
+  hubAssignments      HubStaff[]
+  driverAssignments   DriverAssignment[]
+  driverProfile       Driver?            @relation("DriverUser")
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
 }
 
 model Role {
@@ -284,18 +288,19 @@ model LocalArea {
 }
 
 model Hub {
-  id          String    @id @default(uuid())
-  publicId    String    @unique
+  id          String     @id @default(uuid())
+  publicId    String     @unique
   cityId      String
   localAreaId String
   name        String
-  code        String    @unique
-  isActive    Boolean   @default(true)
-  city        City      @relation(fields: [cityId], references: [id])
-  localArea   LocalArea @relation(fields: [localAreaId], references: [id])
+  code        String     @unique
+  isActive    Boolean    @default(true)
+  city        City       @relation(fields: [cityId], references: [id])
+  localArea   LocalArea  @relation(fields: [localAreaId], references: [id])
   addresses   Address[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  staff       HubStaff[]
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
 }
 
 model Customer {
@@ -311,18 +316,49 @@ model Customer {
 }
 
 model Merchant {
-  id          String    @id @default(uuid())
-  publicId    String    @unique
+  id          String         @id @default(uuid())
+  publicId    String         @unique
   name        String
-  code        String    @unique
+  code        String         @unique
   contactName String
   phone       String
   email       String?
-  creditLimit Decimal   @default(0)
-  isActive    Boolean   @default(true)
+  creditLimit Decimal        @default(0)
+  isActive    Boolean        @default(true)
   addresses   Address[]
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  users       MerchantUser[]
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+}
+
+model MerchantUser {
+  id         String   @id @default(uuid())
+  merchantId String
+  userId     String
+  role       String   @default("member")
+  isActive   Boolean  @default(true)
+  merchant   Merchant @relation(fields: [merchantId], references: [id])
+  user       User     @relation(fields: [userId], references: [id])
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([merchantId, userId])
+  @@index([userId, isActive])
+}
+
+model HubStaff {
+  id        String   @id @default(uuid())
+  hubId     String
+  userId    String
+  role      String   @default("staff")
+  isActive  Boolean  @default(true)
+  hub       Hub      @relation(fields: [hubId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([hubId, userId])
+  @@index([userId, isActive])
 }
 
 model PartnerShop {
@@ -388,15 +424,32 @@ model PartnerVehicle {
 }
 
 model Driver {
-  id        String            @id @default(uuid())
-  publicId  String            @unique
-  userId    String?           @unique
-  fullName  String
-  phone     String            @unique
-  status    PartnerStatus     @default(PENDING)
-  documents PartnerDocument[]
-  createdAt DateTime          @default(now())
-  updatedAt DateTime          @updatedAt
+  id          String             @id @default(uuid())
+  publicId    String             @unique
+  userId      String?            @unique
+  fullName    String
+  phone       String             @unique
+  status      PartnerStatus      @default(PENDING)
+  user        User?              @relation("DriverUser", fields: [userId], references: [id])
+  assignments DriverAssignment[]
+  documents   PartnerDocument[]
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+model DriverAssignment {
+  id        String   @id @default(uuid())
+  driverId  String
+  userId    String
+  role      String   @default("driver")
+  isActive  Boolean  @default(true)
+  driver    Driver   @relation(fields: [driverId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([driverId, userId])
+  @@index([userId, isActive])
 }
 
 model PartnerDocument {

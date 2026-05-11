@@ -25,7 +25,11 @@ describe('DriversService', () => {
       publicId: 'DRV-TEST000000',
       fullName: 'Tunde Ade',
       phone: '08031111111',
-      userId: 'user-1',
+      user: {
+        connect: {
+          id: 'user-1',
+        },
+      },
       documents: {
         create: [
           {

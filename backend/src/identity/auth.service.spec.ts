@@ -10,6 +10,27 @@ describe('AuthService', () => {
     firstName: 'Amina',
     lastName: 'Bello',
     roles: [{ role: { name: 'admin' } }, { role: { name: 'ops' } }],
+    merchantMemberships: [
+      {
+        merchant: {
+          publicId: 'BUS-TEST000000',
+        },
+      },
+    ],
+    hubAssignments: [
+      {
+        hub: {
+          publicId: 'HUB-TEST000000',
+        },
+      },
+    ],
+    driverAssignments: [
+      {
+        driver: {
+          publicId: 'DRV-TEST000000',
+        },
+      },
+    ],
   };
 
   it('signs the access token with public identity context and hides internal id from response', async () => {
@@ -37,6 +58,10 @@ describe('AuthService', () => {
         publicId: 'USR-TEST000000',
         email: 'amina@example.com',
         roles: ['admin', 'ops'],
+        businessPublicIds: ['BUS-TEST000000'],
+        hubPublicIds: ['HUB-TEST000000'],
+        driverPublicIds: ['DRV-TEST000000'],
+        driverPublicId: 'DRV-TEST000000',
       }),
     );
     expect(result).toEqual({

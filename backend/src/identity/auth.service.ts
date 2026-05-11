@@ -15,7 +15,21 @@ export class AuthService {
   async login(input: LoginDto) {
     const user = await this.prisma.user.findUnique({
       where: { email: input.email },
-      include: { roles: { include: { role: true } } },
+      include: {
+        roles: { include: { role: true } },
+        merchantMemberships: {
+          where: { isActive: true },
+          include: { merchant: { select: { publicId: true } } },
+        },
+        hubAssignments: {
+          where: { isActive: true },
+          include: { hub: { select: { publicId: true } } },
+        },
+        driverAssignments: {
+          where: { isActive: true },
+          include: { driver: { select: { publicId: true } } },
+        },
+      },
     });
 
     if (!user || !(await this.passwordService.verify(input.password, user.passwordHash))) {
@@ -23,11 +37,18 @@ export class AuthService {
     }
 
     const roles = user.roles.map((entry) => entry.role.name);
+    const businessPublicIds = user.merchantMemberships.map((entry) => entry.merchant.publicId);
+    const hubPublicIds = user.hubAssignments.map((entry) => entry.hub.publicId);
+    const driverPublicIds = user.driverAssignments.map((entry) => entry.driver.publicId);
     const accessToken = await this.jwtService.signAsync({
       sub: user.id,
       publicId: user.publicId,
       email: user.email,
       roles,
+      businessPublicIds,
+      hubPublicIds,
+      driverPublicIds,
+      driverPublicId: driverPublicIds[0],
     });
 
     return {
