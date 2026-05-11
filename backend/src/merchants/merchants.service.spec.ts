@@ -3,9 +3,12 @@ import { MerchantsService } from './merchants.service';
 
 describe('MerchantsService', () => {
   it('builds merchant create data with public business id and nested address', () => {
-    const service = new MerchantsService({} as never, {
-      generateBusinessId: () => 'BUS-TEST000000',
-    } as never);
+    const service = new MerchantsService(
+      {} as never,
+      {
+        generateBusinessId: () => 'BUS-TEST000000',
+      } as never,
+    );
 
     expect(
       service.buildCreateData({

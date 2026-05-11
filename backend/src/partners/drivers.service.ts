@@ -1,15 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { PublicIdService } from '../common/ids/public-id.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { buildComplianceDocumentCreates } from './compliance-documents.mapper';
 import { CreateDriverDto } from './dto/create-driver.dto';
 
 @Injectable()
 export class DriversService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly publicIds: PublicIdService,
+  ) {}
 
   buildCreateData(input: CreateDriverDto) {
     return {
+      publicId: this.publicIds.generateDriverId(),
       fullName: input.fullName,
       phone: input.phone,
       userId: input.userId,

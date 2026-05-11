@@ -1,8 +1,12 @@
 import { PartnerVehiclesService } from './partner-vehicles.service';
 
 describe('PartnerVehiclesService', () => {
+  const publicIds = {
+    generatePartnerVehicleId: () => 'VEH-TEST000000',
+  };
+
   it('builds partner vehicle create data with compliance documents', () => {
-    const service = new PartnerVehiclesService({} as never);
+    const service = new PartnerVehiclesService({} as never, publicIds as never);
 
     expect(
       service.buildCreateData({
@@ -20,6 +24,7 @@ describe('PartnerVehiclesService', () => {
         ],
       } as never),
     ).toEqual({
+      publicId: 'VEH-TEST000000',
       plateNumber: 'ABC-123-LA',
       make: 'Toyota',
       model: 'HiAce',

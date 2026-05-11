@@ -1,15 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { PublicIdService } from '../common/ids/public-id.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { buildComplianceDocumentCreates } from './compliance-documents.mapper';
 import { CreatePartnerVehicleDto } from './dto/create-partner-vehicle.dto';
 
 @Injectable()
 export class PartnerVehiclesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly publicIds: PublicIdService,
+  ) {}
 
   buildCreateData(input: CreatePartnerVehicleDto) {
     return {
+      publicId: this.publicIds.generatePartnerVehicleId(),
       plateNumber: input.plateNumber,
       make: input.make,
       model: input.model,

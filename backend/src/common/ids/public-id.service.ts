@@ -14,4 +14,20 @@ export class PublicIdService {
   generateBusinessId() {
     return `BUS-${randomCode(12)}`;
   }
+
+  generateHubId() {
+    return `HUB-${randomCode(12)}`;
+  }
+
+  generatePartnerShopId() {
+    return `PSH-${randomCode(12)}`;
+  }
+
+  generatePartnerVehicleId() {
+    return `VEH-${randomCode(12)}`;
+  }
+
+  generateDriverId() {
+    return `DRV-${randomCode(12)}`;
+  }
 }

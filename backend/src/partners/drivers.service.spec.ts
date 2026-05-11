@@ -1,8 +1,12 @@
 import { DriversService } from './drivers.service';
 
 describe('DriversService', () => {
+  const publicIds = {
+    generateDriverId: () => 'DRV-TEST000000',
+  };
+
   it('builds driver create data with compliance documents', () => {
-    const service = new DriversService({} as never);
+    const service = new DriversService({} as never, publicIds as never);
 
     expect(
       service.buildCreateData({
@@ -18,6 +22,7 @@ describe('DriversService', () => {
         ],
       } as never),
     ).toEqual({
+      publicId: 'DRV-TEST000000',
       fullName: 'Tunde Ade',
       phone: '08031111111',
       userId: 'user-1',

@@ -10,6 +10,21 @@
 
 ---
 
+## Current Todo
+
+- [x] Add Prisma, PostgreSQL, Redis, BullMQ, idempotency, Docker, monitoring, and CI foundations.
+- [x] Add users, customers, merchants, addresses, hubs, parcels, custody, delivery OTP, partner shops, vehicles, drivers, and compliance documents.
+- [x] Keep sender return address as a parcel sender address snapshot.
+- [x] Make GPS optional across address/location-bearing records.
+- [x] Move postcode and address data into separate address entities.
+- [x] Add public external IDs for users, customers, merchants, hubs, partner shops, partner vehicles, and drivers.
+- [x] Require `localAreaId` for hubs so hubs can be grouped by service area.
+- [x] Add ESLint and Prettier checks to backend CI.
+- [ ] Build session/JWT guards that scope `/me`, business, hub, and driver routes by public id plus authenticated role/assignment.
+- [ ] Build manifest, route, pricing, wallet, settlement, notifications, offline sync, exceptions, risk, and admin modules.
+
+---
+
 ## File Structure
 
 Create the backend under `backend/`.
@@ -579,7 +594,7 @@ expect(service.generateUserId()).toMatch(/^USR-[A-Z0-9]{12}$/);
 expect(service.generateBusinessId()).toMatch(/^BUS-[A-Z0-9]{12}$/);
 ```
 
-Add a test proving hub creation rejects missing GPS coordinates:
+Add a test proving hub creation rejects a missing local area id while keeping GPS optional:
 
 ```typescript
 expect(() =>
@@ -589,7 +604,7 @@ expect(() =>
 
 - [ ] **Step 2: Implement public id generation**
 
-Create `PublicIdService` with `USR-`, `CUS-`, and `BUS-` prefixed ids. Store public ids separately from internal UUID ids in the Prisma schema.
+Create `PublicIdService` with `USR-`, `CUS-`, `BUS-`, `HUB-`, `PSH-`, `VEH-`, and `DRV-` prefixed ids. Store public ids separately from internal UUID ids in the Prisma schema.
 
 - [ ] **Step 3: Add postcode and GPS fields**
 

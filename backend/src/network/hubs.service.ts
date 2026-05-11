@@ -1,21 +1,29 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AddressType, Prisma } from '@prisma/client';
+import { PublicIdService } from '../common/ids/public-id.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateHubDto } from './dto/create-hub.dto';
 
 @Injectable()
 export class HubsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly publicIds: PublicIdService,
+  ) {}
 
   validateCreateInput(input: CreateHubDto) {
     if (!input.cityId) {
       throw new BadRequestException('cityId is required');
     }
 
+    if (!input.localAreaId) {
+      throw new BadRequestException('localAreaId is required');
+    }
   }
 
   buildCreateData(input: CreateHubDto) {
     return {
+      publicId: this.publicIds.generateHubId(),
       name: input.name,
       code: input.code,
       city: {
@@ -23,15 +31,11 @@ export class HubsService {
           id: input.cityId,
         },
       },
-      ...(input.localAreaId
-        ? {
-            localArea: {
-              connect: {
-                id: input.localAreaId,
-              },
-            },
-          }
-        : {}),
+      localArea: {
+        connect: {
+          id: input.localAreaId,
+        },
+      },
       ...(input.address
         ? {
             addresses: {

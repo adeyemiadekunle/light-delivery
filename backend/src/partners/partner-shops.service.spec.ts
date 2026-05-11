@@ -1,8 +1,12 @@
 import { PartnerShopsService } from './partner-shops.service';
 
 describe('PartnerShopsService', () => {
+  const publicIds = {
+    generatePartnerShopId: () => 'PSH-TEST000000',
+  };
+
   it('builds partner shop create data with address and compliance documents', () => {
-    const service = new PartnerShopsService({} as never);
+    const service = new PartnerShopsService({} as never, publicIds as never);
 
     expect(
       service.buildCreateData({
@@ -25,6 +29,7 @@ describe('PartnerShopsService', () => {
         ],
       } as never),
     ).toEqual({
+      publicId: 'PSH-TEST000000',
       name: 'Ikeja Pickup Partner',
       code: 'PS-IKJ-001',
       contactName: 'Amina Bello',

@@ -1,15 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { AddressType, Prisma } from '@prisma/client';
+import { PublicIdService } from '../common/ids/public-id.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { buildComplianceDocumentCreates } from './compliance-documents.mapper';
 import { CreatePartnerShopDto } from './dto/create-partner-shop.dto';
 
 @Injectable()
 export class PartnerShopsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly publicIds: PublicIdService,
+  ) {}
 
   buildCreateData(input: CreatePartnerShopDto) {
     return {
+      publicId: this.publicIds.generatePartnerShopId(),
       name: input.name,
       code: input.code,
       contactName: input.contactName,

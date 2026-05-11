@@ -1,4 +1,5 @@
 import { IsOptional, IsString } from 'class-validator';
+import { CreateAddressDto } from '../../addresses/dto/create-address.dto';
 import { CreateComplianceDocumentDto } from './create-compliance-document.dto';
 
 export class CreateDriverDto {
@@ -11,6 +12,9 @@ export class CreateDriverDto {
   @IsString()
   @IsOptional()
   userId?: string;
+
+  @IsOptional()
+  address?: CreateAddressDto;
 
   @IsOptional()
   documents?: CreateComplianceDocumentDto[];

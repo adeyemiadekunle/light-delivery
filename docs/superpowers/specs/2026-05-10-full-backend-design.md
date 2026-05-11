@@ -182,8 +182,10 @@ Monitoring should expose machine-readable health and metrics endpoints and write
 - Admin overrides must include actor, reason, timestamp, affected record, and audit trail.
 - Public tracking must hide internal fraud flags, settlement data, financial records, and staff-only notes.
 - External APIs must expose public ids where possible and avoid leaking internal database ids.
+- Session identifiers and access tokens must never be placed in URLs. Business, hub, driver, and user routes should use public ids or short codes in the path, then authorize access from the authenticated session, JWT claims, roles, and ownership or assignment records.
 - Postcode fields are optional on address-bearing records.
 - GPS fields are optional across users, customers, businesses, receivers, partner shops, and hubs.
+- Hubs must belong to a local area so routing, pickup grouping, service coverage, and partner assignment can be resolved by local operating zone.
 
 ## Data Model Overview
 
@@ -224,6 +226,15 @@ The API should be grouped by audience and protected by role-based guards.
 - Admin: network setup, pricing setup, parcel control, exception handling, finance, risk, reporting
 
 All write endpoints that can be retried by mobile clients or external integrations should accept idempotency keys.
+
+External-facing URLs should follow this rule:
+
+- `/me/*` reads the current authenticated user from the session or JWT, not a URL id.
+- `/businesses/:publicId/*` uses the business public id in the path and verifies that the caller belongs to or can administer that business.
+- `/hubs/:publicId/*` uses the hub public id or operational code and verifies hub staff, partner, or admin assignment.
+- `/drivers/:publicId/*` uses the driver public id and verifies driver self-access, dispatch assignment, or admin role.
+
+The public id is only a locator. Authorization must always come from the authenticated session context.
 
 Operational endpoints should include health and monitoring surfaces for internal use:
 

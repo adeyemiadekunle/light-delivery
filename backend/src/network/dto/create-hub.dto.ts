@@ -14,8 +14,8 @@ export class CreateHubDto {
   cityId!: string;
 
   @IsString()
-  @IsOptional()
-  localAreaId?: string;
+  @IsNotEmpty()
+  localAreaId!: string;
 
   @IsString()
   @IsOptional()

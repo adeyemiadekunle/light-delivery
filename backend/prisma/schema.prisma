@@ -4,6 +4,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum UserStatus {
@@ -177,19 +178,19 @@ enum ComplianceDocumentStatus {
 }
 
 model User {
-  id           String     @id @default(uuid())
-  publicId     String     @unique
-  email        String     @unique
-  phone        String?    @unique
-  passwordHash String
-  firstName    String
-  lastName     String
+  id                 String     @id @default(uuid())
+  publicId           String     @unique
+  email              String     @unique
+  phone              String?    @unique
+  passwordHash       String
+  firstName          String
+  lastName           String
   lastKnownLatitude  Decimal?
   lastKnownLongitude Decimal?
-  status       UserStatus @default(ACTIVE)
-  roles        UserRole[]
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  status             UserStatus @default(ACTIVE)
+  roles              UserRole[]
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
 }
 
 model Role {
@@ -283,63 +284,65 @@ model LocalArea {
 }
 
 model Hub {
-  id          String   @id @default(uuid())
+  id          String    @id @default(uuid())
+  publicId    String    @unique
   cityId      String
-  localAreaId String?
+  localAreaId String
   name        String
-  code        String   @unique
-  isActive    Boolean  @default(true)
-  city        City     @relation(fields: [cityId], references: [id])
-  localArea   LocalArea? @relation(fields: [localAreaId], references: [id])
+  code        String    @unique
+  isActive    Boolean   @default(true)
+  city        City      @relation(fields: [cityId], references: [id])
+  localArea   LocalArea @relation(fields: [localAreaId], references: [id])
   addresses   Address[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model Customer {
-  id        String   @id @default(uuid())
-  publicId  String   @unique
-  userId    String?  @unique
+  id        String    @id @default(uuid())
+  publicId  String    @unique
+  userId    String?   @unique
   fullName  String
   phone     String
   email     String?
   addresses Address[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 model Merchant {
-  id          String   @id @default(uuid())
-  publicId    String   @unique
+  id          String    @id @default(uuid())
+  publicId    String    @unique
   name        String
-  code        String   @unique
+  code        String    @unique
   contactName String
   phone       String
   email       String?
-  creditLimit Decimal  @default(0)
-  isActive    Boolean  @default(true)
+  creditLimit Decimal   @default(0)
+  isActive    Boolean   @default(true)
   addresses   Address[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model PartnerShop {
-  id          String        @id @default(uuid())
+  id          String            @id @default(uuid())
+  publicId    String            @unique
   hubId       String?
   name        String
-  code        String        @unique
+  code        String            @unique
   contactName String
   phone       String
-  status      PartnerStatus @default(PENDING)
+  status      PartnerStatus     @default(PENDING)
   addresses   Address[]
   vehicles    PartnerVehicle[]
   documents   PartnerDocument[]
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
 }
 
 model Address {
-  id               String      @id @default(uuid())
+  id               String       @id @default(uuid())
   type             AddressType
   label            String?
   contactName      String?
@@ -357,41 +360,43 @@ model Address {
   merchantId       String?
   hubId            String?
   partnerShopId    String?
-  senderParcelId   String?     @unique
-  receiverParcelId String?     @unique
-  customer         Customer?   @relation(fields: [customerId], references: [id])
-  merchant         Merchant?   @relation(fields: [merchantId], references: [id])
-  hub              Hub?        @relation(fields: [hubId], references: [id])
+  senderParcelId   String?      @unique
+  receiverParcelId String?      @unique
+  customer         Customer?    @relation(fields: [customerId], references: [id])
+  merchant         Merchant?    @relation(fields: [merchantId], references: [id])
+  hub              Hub?         @relation(fields: [hubId], references: [id])
   partnerShop      PartnerShop? @relation(fields: [partnerShopId], references: [id])
-  senderParcel     Parcel?     @relation("ParcelSenderAddress", fields: [senderParcelId], references: [id])
-  receiverParcel   Parcel?     @relation("ParcelReceiverAddress", fields: [receiverParcelId], references: [id])
-  createdAt        DateTime    @default(now())
-  updatedAt        DateTime    @updatedAt
+  senderParcel     Parcel?      @relation("ParcelSenderAddress", fields: [senderParcelId], references: [id])
+  receiverParcel   Parcel?      @relation("ParcelReceiverAddress", fields: [receiverParcelId], references: [id])
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 }
 
 model PartnerVehicle {
-  id             String        @id @default(uuid())
-  partnerShopId  String?
-  plateNumber    String        @unique
-  make           String?
-  model          String?
-  capacityKg     Decimal?
-  status         PartnerStatus @default(PENDING)
-  partnerShop    PartnerShop?  @relation(fields: [partnerShopId], references: [id])
-  documents      PartnerDocument[]
-  createdAt      DateTime      @default(now())
-  updatedAt      DateTime      @updatedAt
+  id            String            @id @default(uuid())
+  publicId      String            @unique
+  partnerShopId String?
+  plateNumber   String            @unique
+  make          String?
+  model         String?
+  capacityKg    Decimal?
+  status        PartnerStatus     @default(PENDING)
+  partnerShop   PartnerShop?      @relation(fields: [partnerShopId], references: [id])
+  documents     PartnerDocument[]
+  createdAt     DateTime          @default(now())
+  updatedAt     DateTime          @updatedAt
 }
 
 model Driver {
-  id        String        @id @default(uuid())
-  userId    String?       @unique
+  id        String            @id @default(uuid())
+  publicId  String            @unique
+  userId    String?           @unique
   fullName  String
-  phone     String        @unique
-  status    PartnerStatus @default(PENDING)
+  phone     String            @unique
+  status    PartnerStatus     @default(PENDING)
   documents PartnerDocument[]
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
 }
 
 model PartnerDocument {
@@ -415,43 +420,43 @@ model PartnerDocument {
 }
 
 model PricingRule {
-  id             String      @id @default(uuid())
-  serviceType    ServiceType
-  originCityId   String?
+  id                String      @id @default(uuid())
+  serviceType       ServiceType
+  originCityId      String?
   destinationCityId String?
-  basePrice      Decimal
-  pricePerKg     Decimal     @default(0)
-  pricePerKm     Decimal     @default(0)
-  isActive       Boolean     @default(true)
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  basePrice         Decimal
+  pricePerKg        Decimal     @default(0)
+  pricePerKm        Decimal     @default(0)
+  isActive          Boolean     @default(true)
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
 }
 
 model Parcel {
-  id               String       @id @default(uuid())
-  waybillNumber    String       @unique
-  trackingCode     String       @unique
-  senderCustomerId String?
-  merchantId       String?
-  originHubId      String?
-  destinationHubId String?
-  serviceType      ServiceType
-  status           ParcelStatus @default(BOOKED)
-  senderName       String
-  senderPhone      String
-  senderAddress    Address?     @relation("ParcelSenderAddress")
-  receiverName     String
-  receiverPhone    String
-  receiverAddress  Address?     @relation("ParcelReceiverAddress")
-  declaredValue    Decimal      @default(0)
-  weightKg         Decimal
+  id                 String         @id @default(uuid())
+  waybillNumber      String         @unique
+  trackingCode       String         @unique
+  senderCustomerId   String?
+  merchantId         String?
+  originHubId        String?
+  destinationHubId   String?
+  serviceType        ServiceType
+  status             ParcelStatus   @default(BOOKED)
+  senderName         String
+  senderPhone        String
+  senderAddress      Address?       @relation("ParcelSenderAddress")
+  receiverName       String
+  receiverPhone      String
+  receiverAddress    Address?       @relation("ParcelReceiverAddress")
+  declaredValue      Decimal        @default(0)
+  weightKg           Decimal
   volumetricWeightKg Decimal?
-  price            Decimal      @default(0)
-  metadata         Json?
-  items            ParcelItem[]
-  custodyEvents    CustodyEvent[]
-  createdAt        DateTime     @default(now())
-  updatedAt        DateTime     @updatedAt
+  price              Decimal        @default(0)
+  metadata           Json?
+  items              ParcelItem[]
+  custodyEvents      CustodyEvent[]
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
 }
 
 model ParcelItem {
@@ -466,18 +471,18 @@ model ParcelItem {
 }
 
 model CustodyEvent {
-  id           String           @id @default(uuid())
-  parcelId     String
-  actorId      String?
-  hubId        String?
-  manifestId   String?
-  eventType    CustodyEventType
-  notes        String?
-  evidence     Json?
-  validation   Json?
-  occurredAt   DateTime
-  parcel       Parcel           @relation(fields: [parcelId], references: [id])
-  createdAt    DateTime         @default(now())
+  id         String           @id @default(uuid())
+  parcelId   String
+  actorId    String?
+  hubId      String?
+  manifestId String?
+  eventType  CustodyEventType
+  notes      String?
+  evidence   Json?
+  validation Json?
+  occurredAt DateTime
+  parcel     Parcel           @relation(fields: [parcelId], references: [id])
+  createdAt  DateTime         @default(now())
 }
 
 model Route {
@@ -503,19 +508,19 @@ model RouteStop {
 }
 
 model Manifest {
-  id          String           @id @default(uuid())
-  manifestNo  String           @unique
-  type        ManifestType
-  status      ManifestStatus   @default(DRAFT)
-  routeId     String?
-  originHubId String?
+  id               String           @id @default(uuid())
+  manifestNo       String           @unique
+  type             ManifestType
+  status           ManifestStatus   @default(DRAFT)
+  routeId          String?
+  originHubId      String?
   destinationHubId String?
-  driverId    String?
-  vehicleId   String?
-  sealNumber  String?
-  parcels     ManifestParcel[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  driverId         String?
+  vehicleId        String?
+  sealNumber       String?
+  parcels          ManifestParcel[]
+  createdAt        DateTime         @default(now())
+  updatedAt        DateTime         @updatedAt
 }
 
 model ManifestParcel {
@@ -540,23 +545,23 @@ model DeliveryAttempt {
 }
 
 model PickupOtp {
-  id          String   @id @default(uuid())
-  parcelId    String
-  codeHash    String
-  expiresAt   DateTime
-  usedAt      DateTime?
-  createdAt   DateTime @default(now())
+  id        String    @id @default(uuid())
+  parcelId  String
+  codeHash  String
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
 }
 
 model Wallet {
-  id          String              @id @default(uuid())
-  customerId  String?
-  merchantId  String?
-  balance     Decimal             @default(0)
-  currency    String              @default("NGN")
+  id           String              @id @default(uuid())
+  customerId   String?
+  merchantId   String?
+  balance      Decimal             @default(0)
+  currency     String              @default("NGN")
   transactions WalletTransaction[]
-  createdAt   DateTime            @default(now())
-  updatedAt   DateTime            @updatedAt
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
 }
 
 model WalletTransaction {
@@ -586,15 +591,15 @@ model Payment {
 }
 
 model SettlementEntry {
-  id          String           @id @default(uuid())
-  partnerId   String
-  parcelId    String?
-  manifestId  String?
-  amount      Decimal
-  status      SettlementStatus @default(PENDING)
-  reason      String?
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id         String           @id @default(uuid())
+  partnerId  String
+  parcelId   String?
+  manifestId String?
+  amount     Decimal
+  status     SettlementStatus @default(PENDING)
+  reason     String?
+  createdAt  DateTime         @default(now())
+  updatedAt  DateTime         @updatedAt
 }
 
 model NotificationMessage {
@@ -611,13 +616,13 @@ model NotificationMessage {
 }
 
 model SyncDevice {
-  id         String   @id @default(uuid())
-  deviceKey  String   @unique
+  id         String    @id @default(uuid())
+  deviceKey  String    @unique
   actorId    String?
   label      String?
   lastSeenAt DateTime?
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 }
 
 model SyncBatch {
@@ -646,18 +651,18 @@ model IdempotencyKey {
 }
 
 model JobRun {
-  id          String    @id @default(uuid())
-  queueName   String
-  jobName     String
-  jobId       String
-  status      JobStatus @default(QUEUED)
-  attempts    Int       @default(0)
-  payload     Json?
-  lastError   String?
-  startedAt   DateTime?
-  finishedAt  DateTime?
-  createdAt   DateTime  @default(now())
-  updatedAt   DateTime  @updatedAt
+  id         String    @id @default(uuid())
+  queueName  String
+  jobName    String
+  jobId      String
+  status     JobStatus @default(QUEUED)
+  attempts   Int       @default(0)
+  payload    Json?
+  lastError  String?
+  startedAt  DateTime?
+  finishedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   @@unique([queueName, jobId])
 }
@@ -694,16 +699,16 @@ model Claim {
 }
 
 model RiskFlag {
-  id          String       @id @default(uuid())
-  parcelId    String?
-  actorId     String?
-  severity    RiskSeverity
-  reason      String
-  metadata    Json?
-  reviewedAt  DateTime?
-  reviewedBy  String?
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
+  id         String       @id @default(uuid())
+  parcelId   String?
+  actorId    String?
+  severity   RiskSeverity
+  reason     String
+  metadata   Json?
+  reviewedAt DateTime?
+  reviewedBy String?
+  createdAt  DateTime     @default(now())
+  updatedAt  DateTime     @updatedAt
 }
 
 model AuditLog {

@@ -3,9 +3,12 @@ import { CustomersService } from './customers.service';
 
 describe('CustomersService', () => {
   it('builds customer create data with public id and nested address', () => {
-    const service = new CustomersService({} as never, {
-      generateCustomerId: () => 'CUS-TEST000000',
-    } as never);
+    const service = new CustomersService(
+      {} as never,
+      {
+        generateCustomerId: () => 'CUS-TEST000000',
+      } as never,
+    );
 
     expect(
       service.buildCreateData({
