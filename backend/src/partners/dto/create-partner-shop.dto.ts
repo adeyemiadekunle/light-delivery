@@ -8,10 +8,6 @@ export class CreatePartnerShopDto {
   @IsString()
   name!: string;
 
-  @ApiProperty({ example: 'PS-IKJ-001' })
-  @IsString()
-  code!: string;
-
   @ApiProperty({ example: 'Amina Bello' })
   @IsString()
   contactName!: string;
@@ -20,10 +16,9 @@ export class CreatePartnerShopDto {
   @IsString()
   phone!: string;
 
-  @ApiPropertyOptional({ description: 'Internal hub id this partner shop serves' })
+  @ApiProperty({ description: 'Public id of the controlling hub this partner shop serves' })
   @IsString()
-  @IsOptional()
-  hubId?: string;
+  hubPublicId!: string;
 
   @ApiPropertyOptional({ type: () => CreateAddressDto })
   @IsOptional()

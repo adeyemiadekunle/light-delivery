@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { OperationalCodeService } from '../common/ids/operational-code.service';
 import { PublicIdService } from '../common/ids/public-id.service';
 import { IdentityModule } from '../identity/identity.module';
 import { DriversService } from './drivers.service';
@@ -9,7 +10,13 @@ import { PartnersController } from './partners.controller';
 @Module({
   imports: [IdentityModule],
   controllers: [PartnersController],
-  providers: [PartnerShopsService, PartnerVehiclesService, DriversService, PublicIdService],
+  providers: [
+    PartnerShopsService,
+    PartnerVehiclesService,
+    DriversService,
+    PublicIdService,
+    OperationalCodeService,
+  ],
   exports: [PartnerShopsService, PartnerVehiclesService, DriversService],
 })
 export class PartnersModule {}
