@@ -21,7 +21,7 @@ This avoids early microservice complexity while keeping the codebase split along
 - Background jobs: BullMQ
 - Auth: JWT access tokens with refresh-token support
 - Validation: class-validator and class-transformer
-- API docs: OpenAPI/Swagger generated from NestJS decorators
+- API docs: OpenAPI/Swagger generated from NestJS decorators, served at `/api/docs` with JSON at `/api/docs-json`
 - Testing: Jest with unit and integration tests
 - Monitoring: structured logs, health checks, metrics, queue visibility, and error reporting hooks
 - External integrations: payment provider, SMS, WhatsApp, and email adapters behind provider interfaces

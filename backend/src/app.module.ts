@@ -25,7 +25,7 @@ import { PrismaModule } from './prisma/prisma.module';
     DeliveryModule,
     IdentityModule,
     IdempotencyModule,
-    JobsModule,
+    ...(process.env.SKIP_QUEUE_CONNECT === 'true' ? [] : [JobsModule]),
     CustomersModule,
     MerchantsModule,
     MonitoringModule,

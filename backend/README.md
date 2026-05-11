@@ -8,7 +8,7 @@ NestJS backend for the asset-light delivery network.
 - Prisma and PostgreSQL
 - Redis and BullMQ
 - Jest
-- OpenAPI docs at `/api/docs`
+- OpenAPI/Swagger docs
 
 ## Setup
 
@@ -52,6 +52,13 @@ Health endpoints:
 
 - `GET /api/v1/health/live`
 - `GET /api/v1/health/version`
+
+API documentation:
+
+- Swagger UI: `GET /api/docs`
+- OpenAPI JSON: `GET /api/docs-json`
+
+The OpenAPI document includes bearer auth, current controller routes, and DTO schemas for request bodies.
 
 ## Docker
 

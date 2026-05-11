@@ -20,6 +20,7 @@
 - [x] Add public external IDs for users, customers, merchants, hubs, partner shops, partner vehicles, and drivers.
 - [x] Require `localAreaId` for hubs so hubs can be grouped by service area.
 - [x] Add ESLint and Prettier checks to backend CI.
+- [x] Add Swagger UI, OpenAPI JSON, bearer auth metadata, controller tags, operation summaries, and DTO schemas.
 - [ ] Build session/JWT guards that scope `/me`, business, hub, and driver routes by public id plus authenticated role/assignment.
 - [ ] Build manifest, route, pricing, wallet, settlement, notifications, offline sync, exceptions, risk, and admin modules.
 
