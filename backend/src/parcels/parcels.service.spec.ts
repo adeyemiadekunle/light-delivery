@@ -91,4 +91,65 @@ describe('ParcelsService', () => {
       }),
     );
   });
+
+  it('returns safe public tracking details without internal operational fields', async () => {
+    const occurredAt = new Date('2026-05-12T10:30:00.000Z');
+    const prisma = {
+      parcel: {
+        findUnique: jest.fn().mockResolvedValue({
+          id: 'parcel-internal-id',
+          waybillNumber: 'ALD-LOS-TEST000001',
+          trackingCode: 'ABCD1234EFGH5678',
+          serviceType: 'DOOR_TO_DOOR',
+          status: 'IN_TRANSIT',
+          senderPhone: '08030000000',
+          receiverPhone: '08031111111',
+          custodyEvents: [
+            {
+              id: 'event-internal-id',
+              parcelId: 'parcel-internal-id',
+              actorId: 'user-internal-id',
+              hubId: 'hub-internal-id',
+              manifestId: 'manifest-internal-id',
+              eventType: 'MANIFEST_DEPARTED',
+              notes: 'Internal linehaul notes',
+              evidence: { seal: 'SEAL-1' },
+              validation: { approved: true },
+              occurredAt,
+            },
+          ],
+        }),
+      },
+    };
+    const service = new ParcelsService(prisma as never, {} as never, {} as never, {} as never);
+
+    await expect(service.findByTrackingCode('ABCD1234EFGH5678')).resolves.toEqual({
+      trackingCode: 'ABCD1234EFGH5678',
+      waybillNumber: 'ALD-LOS-TEST000001',
+      serviceType: 'DOOR_TO_DOOR',
+      status: 'IN_TRANSIT',
+      events: [
+        {
+          eventType: 'MANIFEST_DEPARTED',
+          occurredAt,
+        },
+      ],
+    });
+    expect(prisma.parcel.findUnique).toHaveBeenCalledWith({
+      where: { trackingCode: 'ABCD1234EFGH5678' },
+      select: {
+        trackingCode: true,
+        waybillNumber: true,
+        serviceType: true,
+        status: true,
+        custodyEvents: {
+          orderBy: { occurredAt: 'asc' },
+          select: {
+            eventType: true,
+            occurredAt: true,
+          },
+        },
+      },
+    });
+  });
 });

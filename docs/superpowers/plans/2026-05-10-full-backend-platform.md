@@ -30,7 +30,7 @@
 - [x] Add persistent business-user, hub-staff, and driver-assignment membership tables so scoped JWT claims can be issued from database assignments.
 - [ ] Upgrade parcel booking into a quote-to-label flow with service selection, pickup/drop-off method, and label or QR issuance.
 - [x] Use 16-character public tracking codes.
-- [ ] Expose safe public tracking events.
+- [x] Expose safe public tracking events.
 - [ ] Add partner-shop location capabilities for Google/GPS location finder, opening hours, print-in-shop, service availability, and pickup/drop-off receipt support.
 - [ ] Add returns module for retailer/customer return creation, return label or QR issuance, drop-off/collection choice, and return tracking.
 - [ ] Add delivery preferences and diversion options such as safe place, neighbour, partner-shop collection, and reschedule.

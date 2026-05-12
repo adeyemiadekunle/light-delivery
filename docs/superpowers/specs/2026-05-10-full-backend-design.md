@@ -86,7 +86,7 @@ Calculates delivery charges using service type, origin, destination, weight, vol
 
 Handles bookings, waybill numbers, parcel items, sender and receiver details, service type, declared value, parcel dimensions, parcel status, and tracking code generation.
 
-Public parcel tracking codes should be 16 uppercase alphanumeric characters and remain separate from internal parcel ids and waybill numbers.
+Public parcel tracking codes should be 16 uppercase alphanumeric characters and remain separate from internal parcel ids and waybill numbers. Public tracking responses may expose tracking code, waybill number, service type, parcel status, and a timestamped event timeline. They must not expose internal parcel ids, actor ids, hub ids, manifest ids, phone numbers, addresses, internal notes, evidence payloads, validation payloads, risk flags, or settlement details.
 
 Every parcel must snapshot sender return details at booking time, whether the sender is an individual or a business. Required sender return fields are sender name, sender phone, and sender address. Sender postcode and GPS are optional. This ensures failed delivery, rejected delivery, and return-to-sender flows can work even if the linked customer or merchant profile later changes.
 

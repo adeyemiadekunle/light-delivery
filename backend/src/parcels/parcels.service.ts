@@ -86,13 +86,36 @@ export class ParcelsService {
   }
 
   async findByTrackingCode(code: string) {
-    return this.prisma.parcel.findUnique({
+    const parcel = await this.prisma.parcel.findUnique({
       where: { trackingCode: code },
-      include: {
+      select: {
+        trackingCode: true,
+        waybillNumber: true,
+        serviceType: true,
+        status: true,
         custodyEvents: {
           orderBy: { occurredAt: 'asc' },
+          select: {
+            eventType: true,
+            occurredAt: true,
+          },
         },
       },
     });
+
+    if (!parcel) {
+      return null;
+    }
+
+    return {
+      trackingCode: parcel.trackingCode,
+      waybillNumber: parcel.waybillNumber,
+      serviceType: parcel.serviceType,
+      status: parcel.status,
+      events: parcel.custodyEvents.map((event) => ({
+        eventType: event.eventType,
+        occurredAt: event.occurredAt,
+      })),
+    };
   }
 }
