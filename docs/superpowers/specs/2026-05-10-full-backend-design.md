@@ -66,9 +66,11 @@ Parcel sender and receiver addresses are stored as snapshot address records link
 
 ### Network
 
-Models the physical operating network: countries, states, cities, local areas, hubs, service areas, route zones, pickup points, and failed-delivery collection hubs.
+Models the physical operating network: countries, states, cities, local areas, hubs, service areas, route zones, pickup points, and failed-delivery collection hubs. Lockers are out of scope for the current build and can be added later as a separate location type.
 
-Local hubs should support GPS latitude and longitude because customers, drivers, and operations staff benefit from reliable pickup and drop-off location discovery. Hub GPS and postcode are optional so onboarding can proceed even when exact location data is not available yet, while preserving future compatibility with improved government postcode systems. Hub creation should accept the city and local-area ids, resolve the city/local-area codes server-side, and generate the hub operational code from those location codes plus the next local-area sequence. Callers should not submit hub operational codes.
+Local hubs should support GPS latitude and longitude because customers, drivers, and operations staff benefit from reliable pickup and drop-off location discovery. Hub GPS and postcode are optional so onboarding can proceed even when exact location data is not available yet, while preserving future compatibility with improved government postcode systems. Hub creation should accept the city and local-area ids, resolve the city/local-area codes server-side, and generate the hub operational code from those location codes plus the next local-area sequence. Callers should not submit hub operational codes. Location finder features should use Google Maps or another map provider against hub and partner-shop GPS coordinates instead of relying on postcodes.
+
+The seed process should load Nigeria as the default country, the 37 Nigerian states including FCT, and local government areas as local-area records. With the current schema, each state is represented by one default statewide city so LGAs can be attached as local areas while preserving the existing `Hub.cityId` and `Hub.localAreaId` contract.
 
 ### Partners
 

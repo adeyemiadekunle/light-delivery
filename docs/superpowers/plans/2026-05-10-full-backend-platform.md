@@ -20,8 +20,10 @@
 - [x] Add public external IDs for users, customers, merchants, hubs, partner shops, partner vehicles, and drivers.
 - [x] Require `localAreaId` for hubs so hubs can be grouped by service area.
 - [x] Generate hub operational codes from city/local-area codes and a local sequence instead of accepting caller-provided hub codes.
+- [x] Add a Nigeria network seed importer for states and local government areas.
 - [x] Link partner shops to their controlling hub with a real Prisma relation instead of a loose `hubId` string.
 - [x] Generate partner shop operational codes from the controlling hub public id instead of accepting caller-provided partner shop codes or internal hub ids.
+- [x] Defer locker support; prioritize GPS-backed hubs and partner shops for Google-powered location finding.
 - [x] Add ESLint and Prettier checks to backend CI.
 - [x] Add Swagger UI, OpenAPI JSON, bearer auth metadata, controller tags, operation summaries, and DTO schemas.
 - [x] Build session/JWT guards that scope `/me`, business, hub, and driver routes by public id plus authenticated role/assignment.

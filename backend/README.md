@@ -38,6 +38,14 @@ npm run prisma:generate
 npm run prisma:migrate
 ```
 
+6. Seed Nigeria network geography:
+
+```bash
+npm run prisma:seed
+```
+
+The seed loads Nigeria, 37 states including FCT, and 774 local government areas from the public SQL source at `davepartner/sql-list-of-local-governments-and-states-in-Nigeria`. LGAs are stored as `LocalArea` records under one default statewide `City` per state, matching the current hub `cityId` and `localAreaId` model.
+
 ## Common Commands
 
 ```bash
