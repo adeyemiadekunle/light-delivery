@@ -31,7 +31,7 @@
 - [ ] Upgrade parcel booking into a quote-to-label flow with service selection, pickup/drop-off method, and label or QR issuance.
 - [x] Use 16-character public tracking codes.
 - [x] Expose safe public tracking events.
-- [ ] Add partner-shop location capabilities for Google/GPS location finder, opening hours, print-in-shop, service availability, and pickup/drop-off receipt support.
+- [x] Add partner-shop service capabilities for GPS-backed location finder, opening hours, print-in-shop, service availability, and pickup/drop-off receipt support.
 - [ ] Add returns module for retailer/customer return creation, return label or QR issuance, drop-off/collection choice, and return tracking.
 - [ ] Add delivery preferences and diversion options such as safe place, neighbour, partner-shop collection, and reschedule.
 - [ ] Add real BullMQ workers and idempotency enforcement for parcel booking, tracking events, notifications, payments, custody scans, and offline sync.

@@ -22,10 +22,20 @@ describe('PartnerShopsService', () => {
           contactName: 'Amina Bello',
           phone: '08030000000',
           hubPublicId: 'HUB-TEST000000',
+          supportsDropoff: true,
+          supportsPickup: true,
+          supportsReturns: true,
+          supportsPrintInShop: true,
+          supportsDigitalReceipt: true,
+          openingHours: {
+            monday: { opens: '09:00', closes: '18:00' },
+          },
           address: {
             line1: '12 Allen Avenue',
             freeformCity: 'Ikeja',
             freeformState: 'Lagos',
+            latitude: 6.6018,
+            longitude: 3.3515,
           },
           documents: [
             {
@@ -47,6 +57,14 @@ describe('PartnerShopsService', () => {
       code: 'PSH-LOS-IKEJA-001',
       contactName: 'Amina Bello',
       phone: '08030000000',
+      supportsDropoff: true,
+      supportsPickup: true,
+      supportsReturns: true,
+      supportsPrintInShop: true,
+      supportsDigitalReceipt: true,
+      openingHours: {
+        monday: { opens: '09:00', closes: '18:00' },
+      },
       hub: {
         connect: {
           id: 'hub-1',
@@ -59,6 +77,8 @@ describe('PartnerShopsService', () => {
             line1: '12 Allen Avenue',
             freeformCity: 'Ikeja',
             freeformState: 'Lagos',
+            latitude: 6.6018,
+            longitude: 3.3515,
           },
         ],
       },
@@ -68,6 +88,10 @@ describe('PartnerShopsService', () => {
             type: 'BUSINESS_REGISTRATION',
             documentNumber: 'BN-12345',
             storageKey: 'partners/ps-ikj-001/business-registration.pdf',
+            fileName: undefined,
+            issuedAt: undefined,
+            expiresAt: undefined,
+            notes: undefined,
           },
         ],
       },

@@ -26,6 +26,12 @@ export class PartnerShopsService {
       code: this.operationalCodes.generatePartnerShopCode(hub.code, sequence),
       contactName: input.contactName,
       phone: input.phone,
+      supportsDropoff: input.supportsDropoff,
+      supportsPickup: input.supportsPickup,
+      supportsReturns: input.supportsReturns,
+      supportsPrintInShop: input.supportsPrintInShop,
+      supportsDigitalReceipt: input.supportsDigitalReceipt,
+      openingHours: input.openingHours as Prisma.InputJsonValue | undefined,
       hub: {
         connect: {
           id: hub.id,
