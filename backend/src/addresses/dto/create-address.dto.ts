@@ -41,6 +41,22 @@ export class CreateAddressDto {
   @IsOptional()
   postcode?: string;
 
+  @ApiPropertyOptional({
+    description: 'Optional Google Places id selected by the user during address lookup',
+    example: 'ChIJ2Y1b3YOOxRARKGZLG0e7XGQ',
+  })
+  @IsString()
+  @IsOptional()
+  googlePlaceId?: string;
+
+  @ApiPropertyOptional({
+    description: 'Optional full address returned by the map provider',
+    example: '12 Allen Avenue, Ikeja, Lagos, Nigeria',
+  })
+  @IsString()
+  @IsOptional()
+  formattedAddress?: string;
+
   @ApiPropertyOptional({ minimum: -90, maximum: 90, example: 6.6018 })
   @IsNumber()
   @Min(-90)

@@ -32,6 +32,7 @@
 - [x] Use 16-character public tracking codes.
 - [x] Expose safe public tracking events.
 - [x] Add partner-shop service capabilities for GPS-backed location finder, opening hours, print-in-shop, service availability, and pickup/drop-off receipt support.
+- [x] Add optional Google place id and formatted address metadata to address records for map-backed registration and location lookup.
 - [ ] Add returns module for retailer/customer return creation, return label or QR issuance, drop-off/collection choice, and return tracking.
 - [ ] Add delivery preferences and diversion options such as safe place, neighbour, partner-shop collection, and reschedule.
 - [ ] Add real BullMQ workers and idempotency enforcement for parcel booking, tracking events, notifications, payments, custody scans, and offline sync.

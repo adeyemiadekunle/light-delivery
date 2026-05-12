@@ -398,6 +398,8 @@ model Address {
   freeformCity     String?
   freeformState    String?
   postcode         String?
+  googlePlaceId    String?
+  formattedAddress String?
   latitude         Decimal?
   longitude        Decimal?
   customerId       String?

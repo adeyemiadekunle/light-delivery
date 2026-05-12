@@ -68,6 +68,27 @@ API documentation:
 
 The OpenAPI document includes bearer auth, current controller routes, and DTO schemas for request bodies.
 
+Partner shop registration can include map-provider metadata captured by the UI from Google Places or a similar address lookup. The partner does not type the place id directly; the UI sends it with the selected address:
+
+```json
+{
+  "name": "Ikeja Pickup Partner",
+  "contactName": "Amina Bello",
+  "phone": "08030000000",
+  "hubPublicId": "HUB-TEST000000",
+  "address": {
+    "line1": "12 Allen Avenue",
+    "freeformCity": "Ikeja",
+    "freeformState": "Lagos",
+    "localAreaId": "local-area-id",
+    "latitude": 6.6018,
+    "longitude": 3.3515,
+    "googlePlaceId": "ChIJ2Y1b3YOOxRARKGZLG0e7XGQ",
+    "formattedAddress": "12 Allen Avenue, Ikeja, Lagos, Nigeria"
+  }
+}
+```
+
 Session-scoped endpoints:
 
 - `GET /api/v1/me`

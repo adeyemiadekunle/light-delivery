@@ -36,6 +36,8 @@ describe('PartnerShopsService', () => {
             freeformState: 'Lagos',
             latitude: 6.6018,
             longitude: 3.3515,
+            googlePlaceId: 'ChIJ2Y1b3YOOxRARKGZLG0e7XGQ',
+            formattedAddress: '12 Allen Avenue, Ikeja, Lagos, Nigeria',
           },
           documents: [
             {
@@ -79,6 +81,8 @@ describe('PartnerShopsService', () => {
             freeformState: 'Lagos',
             latitude: 6.6018,
             longitude: 3.3515,
+            googlePlaceId: 'ChIJ2Y1b3YOOxRARKGZLG0e7XGQ',
+            formattedAddress: '12 Allen Avenue, Ikeja, Lagos, Nigeria',
           },
         ],
       },

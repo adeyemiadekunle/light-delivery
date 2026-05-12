@@ -60,7 +60,7 @@ The merchant module must create business public ids and can attach one or more f
 
 ### Addresses
 
-Addresses are first-class records instead of repeated text columns. Address records store line fields, optional postcode, optional GPS, optional contact name/phone, and ownership links for customers, merchants, hubs, partner shops, and parcel sender/receiver snapshots.
+Addresses are first-class records instead of repeated text columns. Address records store line fields, optional postcode, optional GPS, optional Google place id, optional formatted provider address, optional contact name/phone, and ownership links for customers, merchants, hubs, partner shops, and parcel sender/receiver snapshots.
 
 Parcel sender and receiver addresses are stored as snapshot address records linked to the parcel. This preserves return-to-sender and delivery evidence even if the customer's or merchant's saved address changes later.
 
@@ -76,7 +76,7 @@ The seed process should load Nigeria as the default country, the 37 Nigerian sta
 
 Handles partner shops, partner vans, drivers, KYC records, compliance documents, insurance details, vehicle records, contract status, suspension status, and operational eligibility.
 
-Partner shops can have first-class address records and compliance documents such as business registration or government ID. Each partner shop can be linked to its controlling hub so operations can group partner pickup/drop-off points under a hub. Partner shop creation should accept the controlling hub public id, resolve the internal hub relation server-side, and generate the partner shop operational code from the hub code and next hub-local sequence. Callers should not submit partner shop codes or internal hub ids. Partner shops should expose service capability flags for drop-off, pickup, returns, print-in-shop, and digital receipts, plus structured opening hours. Their GPS coordinates live on the related address record and power Google/map-based location finder features. Partner vehicles can belong to partner shops and carry vehicle insurance, roadworthiness, and license documents. Drivers can be linked to platform users later and must support driver-license and identity documents. Compliance documents start as pending and can be verified, rejected, or marked expired by operations/risk teams.
+Partner shops can have first-class address records and compliance documents such as business registration or government ID. Each partner shop can be linked to its controlling hub so operations can group partner pickup/drop-off points under a hub. Partner shop creation should accept the controlling hub public id, resolve the internal hub relation server-side, and generate the partner shop operational code from the hub code and next hub-local sequence. Callers should not submit partner shop codes or internal hub ids. Partner shops should expose service capability flags for drop-off, pickup, returns, print-in-shop, and digital receipts, plus structured opening hours. Their GPS coordinates, optional Google place id, and optional formatted provider address live on the related address record and power Google/map-based location finder features. Partner vehicles can belong to partner shops and carry vehicle insurance, roadworthiness, and license documents. Drivers can be linked to platform users later and must support driver-license and identity documents. Compliance documents start as pending and can be verified, rejected, or marked expired by operations/risk teams.
 
 ### Pricing
 
