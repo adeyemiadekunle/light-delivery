@@ -1,9 +1,9 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AddressType, Prisma } from '@prisma/client';
-import { randomCode } from '../common/ids/random-code';
 import { PricingService } from '../pricing/pricing.service';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateParcelDto } from './dto/create-parcel.dto';
+import { TrackingCodeService } from './tracking-code.service';
 import { WaybillService } from './waybill.service';
 
 @Injectable()
@@ -12,6 +12,7 @@ export class ParcelsService {
     private readonly prisma: PrismaService,
     private readonly pricingService: PricingService,
     private readonly waybillService: WaybillService,
+    private readonly trackingCodes: TrackingCodeService,
   ) {}
 
   validateCreateInput(input: Partial<CreateParcelDto>) {
@@ -67,7 +68,7 @@ export class ParcelsService {
     return this.prisma.parcel.create({
       data: {
         waybillNumber: this.waybillService.generate('LOS'),
-        trackingCode: randomCode(12),
+        trackingCode: this.trackingCodes.generate(),
         serviceType: input.serviceType,
         senderCustomerId: input.senderCustomerId,
         merchantId: input.merchantId,
