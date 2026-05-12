@@ -19,6 +19,7 @@
 - [x] Move postcode and address data into separate address entities.
 - [x] Add public external IDs for users, customers, merchants, hubs, partner shops, partner vehicles, and drivers.
 - [x] Require `localAreaId` for hubs so hubs can be grouped by service area.
+- [x] Generate hub operational codes from city/local-area codes and a local sequence instead of accepting caller-provided hub codes.
 - [x] Link partner shops to their controlling hub with a real Prisma relation instead of a loose `hubId` string.
 - [x] Generate partner shop operational codes from the controlling hub public id instead of accepting caller-provided partner shop codes or internal hub ids.
 - [x] Add ESLint and Prettier checks to backend CI.

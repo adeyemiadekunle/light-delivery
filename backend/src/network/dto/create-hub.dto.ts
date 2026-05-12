@@ -7,11 +7,6 @@ export class CreateHubDto {
   @IsNotEmpty()
   name!: string;
 
-  @ApiProperty({ example: 'LOS-IKEJA' })
-  @IsString()
-  @IsNotEmpty()
-  code!: string;
-
   @ApiProperty({ description: 'City id containing this hub' })
   @IsString()
   @IsNotEmpty()

@@ -68,7 +68,7 @@ Parcel sender and receiver addresses are stored as snapshot address records link
 
 Models the physical operating network: countries, states, cities, local areas, hubs, service areas, route zones, pickup points, and failed-delivery collection hubs.
 
-Local hubs should support GPS latitude and longitude because customers, drivers, and operations staff benefit from reliable pickup and drop-off location discovery. Hub GPS and postcode are optional so onboarding can proceed even when exact location data is not available yet, while preserving future compatibility with improved government postcode systems.
+Local hubs should support GPS latitude and longitude because customers, drivers, and operations staff benefit from reliable pickup and drop-off location discovery. Hub GPS and postcode are optional so onboarding can proceed even when exact location data is not available yet, while preserving future compatibility with improved government postcode systems. Hub creation should accept the city and local-area ids, resolve the city/local-area codes server-side, and generate the hub operational code from those location codes plus the next local-area sequence. Callers should not submit hub operational codes.
 
 ### Partners
 
