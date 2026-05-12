@@ -14,4 +14,13 @@ describe('OperationalCodeService', () => {
     expect(service.generatePartnerShopCode('LOS-IKEJA', 1)).toBe('PSH-LOS-IKEJA-001');
     expect(service.generatePartnerShopCode('LOS-IKEJA', 23)).toBe('PSH-LOS-IKEJA-023');
   });
+
+  it('generates business and driver codes only when applications are approved', () => {
+    const service = new OperationalCodeService();
+
+    expect(service.generateBusinessCode('Amina Stores Limited', 1)).toBe(
+      'BUS-AMINA-STORES-LIMITED-001',
+    );
+    expect(service.generateDriverCode(12)).toBe('DRV-000012');
+  });
 });

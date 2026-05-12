@@ -96,6 +96,12 @@ Session-scoped endpoints:
 - `GET /api/v1/hubs/:publicId`
 - `GET /api/v1/partners/drivers/:publicId`
 
+Application approval endpoints assign operational codes and activate pending applications:
+
+- `POST /api/v1/merchants/:publicId/approve`
+- `POST /api/v1/partners/shops/:publicId/approve`
+- `POST /api/v1/partners/drivers/:publicId/approve`
+
 ## Docker
 
 From the repository root:

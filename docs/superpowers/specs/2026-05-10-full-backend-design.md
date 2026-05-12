@@ -52,7 +52,7 @@ The customer module must create customer public ids and can attach one or more f
 
 Handles business accounts, merchant users, business profiles, credit eligibility, volume rules, reporting access, and business address books.
 
-Business accounts must have private internal UUID ids and separate non-sequential public business ids. Business addresses support optional postcode and optional GPS coordinates.
+Business accounts must have private internal UUID ids and separate non-sequential public business ids. Business applications start pending without an operational business code. The company assigns the operational business code only after approval, and approval activates the business account. Business addresses support optional postcode and optional GPS coordinates.
 
 `Merchant` is the business account: credit terms, business reporting, staff users, bulk rules, and settlement-facing identity. It stays separate from `User` because a business can have many users and one user may later belong to multiple businesses.
 
@@ -76,7 +76,7 @@ The seed process should load Nigeria as the default country, the 37 Nigerian sta
 
 Handles partner shops, partner vans, drivers, KYC records, compliance documents, insurance details, vehicle records, contract status, suspension status, and operational eligibility.
 
-Partner shops can have first-class address records and compliance documents such as business registration or government ID. Each partner shop can be linked to its controlling hub so operations can group partner pickup/drop-off points under a hub. Partner shop creation should accept the controlling hub public id, resolve the internal hub relation server-side, and generate the partner shop operational code from the hub code and next hub-local sequence. Callers should not submit partner shop codes or internal hub ids. Partner shops should expose service capability flags for drop-off, pickup, returns, print-in-shop, and digital receipts, plus structured opening hours. Their GPS coordinates, optional Google place id, and optional formatted provider address live on the related address record and power Google/map-based location finder features. Partner vehicles can belong to partner shops and carry vehicle insurance, roadworthiness, and license documents. Drivers can be linked to platform users later and must support driver-license and identity documents. Compliance documents start as pending and can be verified, rejected, or marked expired by operations/risk teams.
+Partner shops can have first-class address records and compliance documents such as business registration or government ID. Each partner shop can be linked to its controlling hub so operations can group partner pickup/drop-off points under a hub. Partner shop creation should accept the controlling hub public id and resolve the internal hub relation server-side. Partner shop applications start pending without an operational code; approval by the company generates the partner shop code from the hub code and next approved hub-local sequence. Callers should not submit partner shop codes or internal hub ids. Partner shops should expose service capability flags for drop-off, pickup, returns, print-in-shop, and digital receipts, plus structured opening hours. Their GPS coordinates, optional Google place id, and optional formatted provider address live on the related address record and power Google/map-based location finder features. Partner vehicles can belong to partner shops and carry vehicle insurance, roadworthiness, and license documents. Drivers can apply with documents and start pending without operational driver codes. Driver approval assigns the driver code and activates the driver. Drivers can be linked to platform users later and must support driver-license and identity documents. Compliance documents start as pending and can be verified, rejected, or marked expired by operations/risk teams.
 
 ### Pricing
 
@@ -186,6 +186,7 @@ Monitoring should expose machine-readable health and metrics endpoints and write
 - Admin overrides must include actor, reason, timestamp, affected record, and audit trail.
 - Public tracking must hide internal fraud flags, settlement data, financial records, and staff-only notes.
 - External APIs must expose public ids where possible and avoid leaking internal database ids.
+- Partner-shop, driver, and merchant business codes must be assigned by approval workflows, not by public application forms.
 - Session identifiers and access tokens must never be placed in URLs. Business, hub, driver, and user routes should use public ids or short codes in the path, then authorize access from the authenticated session, JWT claims, roles, and ownership or assignment records.
 - Postcode fields are optional on address-bearing records.
 - GPS fields are optional across users, customers, businesses, receivers, partner shops, and hubs.

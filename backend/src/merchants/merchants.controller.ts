@@ -1,9 +1,10 @@
-import { Body, Controller, Get, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiOkResponse,
   ApiOperation,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { CreateMerchantDto } from './dto/create-merchant.dto';
@@ -27,5 +28,13 @@ export class MerchantsController {
   @Get()
   list() {
     return this.merchantsService.list();
+  }
+
+  @ApiOperation({ summary: 'Approve a merchant business application and assign its code' })
+  @ApiParam({ name: 'publicId', description: 'Business public id' })
+  @ApiOkResponse({ description: 'Merchant approved with operational business code' })
+  @Post(':publicId/approve')
+  approve(@Param('publicId') publicId: string) {
+    return this.merchantsService.approve(publicId);
   }
 }

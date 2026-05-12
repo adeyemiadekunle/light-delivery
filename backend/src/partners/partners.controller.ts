@@ -43,6 +43,14 @@ export class PartnersController {
     return this.partnerShopsService.list();
   }
 
+  @ApiOperation({ summary: 'Approve a partner shop application and assign its code' })
+  @ApiParam({ name: 'publicId', description: 'Partner shop public id' })
+  @ApiOkResponse({ description: 'Partner shop approved with operational code' })
+  @Post('shops/:publicId/approve')
+  approveShop(@Param('publicId') publicId: string) {
+    return this.partnerShopsService.approve(publicId);
+  }
+
   @ApiOperation({ summary: 'Create a partner vehicle' })
   @ApiCreatedResponse({ description: 'Partner vehicle created' })
   @Post('vehicles')
@@ -69,6 +77,14 @@ export class PartnersController {
   @Get('drivers')
   listDrivers() {
     return this.driversService.list();
+  }
+
+  @ApiOperation({ summary: 'Approve a driver application and assign its code' })
+  @ApiParam({ name: 'publicId', description: 'Driver public id' })
+  @ApiOkResponse({ description: 'Driver approved with operational code' })
+  @Post('drivers/:publicId/approve')
+  approveDriver(@Param('publicId') publicId: string) {
+    return this.driversService.approve(publicId);
   }
 
   @ApiOperation({ summary: 'Get a driver profile by public id' })

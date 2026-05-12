@@ -7,10 +7,6 @@ export class CreateMerchantDto {
   @IsString()
   name!: string;
 
-  @ApiProperty({ example: 'LIGHT-FOODS' })
-  @IsString()
-  code!: string;
-
   @ApiProperty({ example: 'Tunde Ade' })
   @IsString()
   contactName!: string;

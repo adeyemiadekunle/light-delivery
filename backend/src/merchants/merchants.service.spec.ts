@@ -5,14 +5,20 @@ describe('MerchantsService', () => {
   const publicIds = {
     generateBusinessId: () => 'BUS-TEST000000',
   };
+  const operationalCodes = {
+    generateBusinessCode: () => 'BUS-AMINA-STORES-LIMITED-001',
+  };
 
-  it('builds merchant create data with public business id and nested address', () => {
-    const service = new MerchantsService({} as never, publicIds as never);
+  it('builds a pending merchant application without an operational code', () => {
+    const service = new MerchantsService(
+      {} as never,
+      publicIds as never,
+      operationalCodes as never,
+    );
 
     expect(
       service.buildCreateData({
         name: 'Amina Stores Limited',
-        code: 'AMINA-STORES',
         contactName: 'Amina Bello',
         phone: '08030000000',
         email: 'ops@aminastores.example',
@@ -26,10 +32,11 @@ describe('MerchantsService', () => {
     ).toEqual({
       publicId: 'BUS-TEST000000',
       name: 'Amina Stores Limited',
-      code: 'AMINA-STORES',
       contactName: 'Amina Bello',
       phone: '08030000000',
       email: 'ops@aminastores.example',
+      status: 'PENDING',
+      isActive: false,
       addresses: {
         create: [
           {
@@ -40,6 +47,47 @@ describe('MerchantsService', () => {
             postcode: '102273',
           },
         ],
+      },
+    });
+  });
+
+  it('approves a pending merchant and assigns the next operational code', async () => {
+    const prisma = {
+      merchant: {
+        findUnique: jest.fn().mockResolvedValue({
+          id: 'merchant-1',
+          publicId: 'BUS-TEST000000',
+          name: 'Amina Stores Limited',
+          code: null,
+          status: 'PENDING',
+        }),
+        count: jest.fn().mockResolvedValue(0),
+        update: jest.fn().mockResolvedValue({
+          publicId: 'BUS-TEST000000',
+          code: 'BUS-AMINA-STORES-LIMITED-001',
+          status: 'ACTIVE',
+          isActive: true,
+        }),
+      },
+    };
+    const codes = {
+      generateBusinessCode: jest.fn().mockReturnValue('BUS-AMINA-STORES-LIMITED-001'),
+    };
+    const service = new MerchantsService(prisma as never, publicIds as never, codes as never);
+
+    await expect(service.approve('BUS-TEST000000')).resolves.toEqual({
+      publicId: 'BUS-TEST000000',
+      code: 'BUS-AMINA-STORES-LIMITED-001',
+      status: 'ACTIVE',
+      isActive: true,
+    });
+    expect(codes.generateBusinessCode).toHaveBeenCalledWith('Amina Stores Limited', 1);
+    expect(prisma.merchant.update).toHaveBeenCalledWith({
+      where: { id: 'merchant-1' },
+      data: {
+        code: 'BUS-AMINA-STORES-LIMITED-001',
+        status: 'ACTIVE',
+        isActive: true,
       },
     });
   });
@@ -55,11 +103,13 @@ describe('MerchantsService', () => {
             contactName: 'Tunde Ade',
             phone: '08031111111',
             email: 'ops@lightfoods.example',
+            status: 'ACTIVE',
             isActive: true,
           }),
         },
       } as never,
       publicIds as never,
+      operationalCodes as never,
     );
 
     await expect(service.findPublicProfileByPublicId('BUS-TEST000000')).resolves.toEqual({
@@ -69,6 +119,7 @@ describe('MerchantsService', () => {
       contactName: 'Tunde Ade',
       phone: '08031111111',
       email: 'ops@lightfoods.example',
+      status: 'ACTIVE',
       isActive: true,
     });
   });

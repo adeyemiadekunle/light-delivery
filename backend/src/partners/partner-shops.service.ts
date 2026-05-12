@@ -1,5 +1,5 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { AddressType, Prisma } from '@prisma/client';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
+import { AddressType, PartnerStatus, Prisma } from '@prisma/client';
 import { OperationalCodeService } from '../common/ids/operational-code.service';
 import { PublicIdService } from '../common/ids/public-id.service';
 import { PrismaService } from '../prisma/prisma.service';
@@ -19,13 +19,13 @@ export class PartnerShopsService {
     private readonly operationalCodes: OperationalCodeService,
   ) {}
 
-  buildCreateData(input: CreatePartnerShopDto, hub: PartnerShopHubCode, sequence: number) {
+  buildCreateData(input: CreatePartnerShopDto, hub: PartnerShopHubCode) {
     return {
       publicId: this.publicIds.generatePartnerShopId(),
       name: input.name,
-      code: this.operationalCodes.generatePartnerShopCode(hub.code, sequence),
       contactName: input.contactName,
       phone: input.phone,
+      status: PartnerStatus.PENDING,
       supportsDropoff: input.supportsDropoff,
       supportsPickup: input.supportsPickup,
       supportsReturns: input.supportsReturns,
@@ -63,13 +63,57 @@ export class PartnerShopsService {
       throw new NotFoundException('Hub was not found');
     }
 
-    const existingPartnerShopCount = await this.prisma.partnerShop.count({
-      where: { hubId: hub.id },
+    return this.prisma.partnerShop.create({
+      data: this.buildCreateData(input, hub),
+      include: { addresses: true, documents: true, hub: true },
+    });
+  }
+
+  async approve(publicId: string) {
+    const partnerShop = await this.prisma.partnerShop.findUnique({
+      where: { publicId },
+      select: {
+        id: true,
+        publicId: true,
+        code: true,
+        status: true,
+        hubId: true,
+        hub: {
+          select: {
+            code: true,
+          },
+        },
+      },
     });
 
-    return this.prisma.partnerShop.create({
-      data: this.buildCreateData(input, hub, existingPartnerShopCount + 1),
-      include: { addresses: true, documents: true, hub: true },
+    if (!partnerShop) {
+      throw new NotFoundException('Partner shop was not found');
+    }
+
+    if (partnerShop.code || partnerShop.status === PartnerStatus.ACTIVE) {
+      throw new ConflictException('Partner shop has already been approved');
+    }
+
+    if (!partnerShop.hubId || !partnerShop.hub) {
+      throw new ConflictException('Partner shop must belong to a hub before approval');
+    }
+
+    const approvedPartnerShopCount = await this.prisma.partnerShop.count({
+      where: {
+        hubId: partnerShop.hubId,
+        code: { not: null },
+      },
+    });
+
+    return this.prisma.partnerShop.update({
+      where: { id: partnerShop.id },
+      data: {
+        code: this.operationalCodes.generatePartnerShopCode(
+          partnerShop.hub.code,
+          approvedPartnerShopCount + 1,
+        ),
+        status: PartnerStatus.ACTIVE,
+      },
     });
   }
 

@@ -51,14 +51,13 @@ describe('PartnerShopsService', () => {
           id: 'hub-1',
           code: 'LOS-IKEJA',
         },
-        1,
       ),
     ).toEqual({
       publicId: 'PSH-TEST000000',
       name: 'Ikeja Pickup Partner',
-      code: 'PSH-LOS-IKEJA-001',
       contactName: 'Amina Bello',
       phone: '08030000000',
+      status: 'PENDING',
       supportsDropoff: true,
       supportsPickup: true,
       supportsReturns: true,
@@ -102,7 +101,7 @@ describe('PartnerShopsService', () => {
     });
   });
 
-  it('resolves hub public id and creates a partner shop with the next code sequence', async () => {
+  it('resolves hub public id and creates a pending partner shop application without a code', async () => {
     const prisma = {
       hub: {
         findUnique: jest.fn().mockResolvedValue({
@@ -111,17 +110,18 @@ describe('PartnerShopsService', () => {
         }),
       },
       partnerShop: {
-        count: jest.fn().mockResolvedValue(2),
         create: jest.fn().mockResolvedValue({
           publicId: 'PSH-TEST000000',
-          code: 'PSH-LOS-IKEJA-003',
+          code: null,
+          status: 'PENDING',
         }),
       },
     };
-    const codes = {
-      generatePartnerShopCode: jest.fn().mockReturnValue('PSH-LOS-IKEJA-003'),
-    };
-    const service = new PartnerShopsService(prisma as never, publicIds as never, codes as never);
+    const service = new PartnerShopsService(
+      prisma as never,
+      publicIds as never,
+      operationalCodes as never,
+    );
 
     await expect(
       service.create({
@@ -132,13 +132,58 @@ describe('PartnerShopsService', () => {
       } as never),
     ).resolves.toEqual({
       publicId: 'PSH-TEST000000',
-      code: 'PSH-LOS-IKEJA-003',
+      code: null,
+      status: 'PENDING',
     });
     expect(prisma.hub.findUnique).toHaveBeenCalledWith({
       where: { publicId: 'HUB-TEST000000' },
       select: { id: true, code: true },
     });
-    expect(prisma.partnerShop.count).toHaveBeenCalledWith({ where: { hubId: 'hub-1' } });
-    expect(codes.generatePartnerShopCode).toHaveBeenCalledWith('LOS-IKEJA', 3);
+  });
+
+  it('approves a pending partner shop and assigns the next operational code', async () => {
+    const prisma = {
+      partnerShop: {
+        findUnique: jest.fn().mockResolvedValue({
+          id: 'shop-1',
+          publicId: 'PSH-TEST000000',
+          code: null,
+          status: 'PENDING',
+          hubId: 'hub-1',
+          hub: {
+            code: 'LOS-IKEJA',
+          },
+        }),
+        count: jest.fn().mockResolvedValue(2),
+        update: jest.fn().mockResolvedValue({
+          publicId: 'PSH-TEST000000',
+          code: 'PSH-LOS-IKEJA-003',
+          status: 'ACTIVE',
+        }),
+      },
+    };
+    const codes = {
+      generatePartnerShopCode: jest.fn().mockReturnValue('PSH-LOS-IKEJA-003'),
+    };
+    const service = new PartnerShopsService(prisma as never, publicIds as never, codes as never);
+
+    await expect(service.approve('PSH-TEST000000')).resolves.toEqual({
+      publicId: 'PSH-TEST000000',
+      code: 'PSH-LOS-IKEJA-003',
+      status: 'ACTIVE',
+    });
+    expect(prisma.partnerShop.count).toHaveBeenCalledWith({
+      where: {
+        hubId: 'hub-1',
+        code: { not: null },
+      },
+    });
+    expect(prisma.partnerShop.update).toHaveBeenCalledWith({
+      where: { id: 'shop-1' },
+      data: {
+        code: 'PSH-LOS-IKEJA-003',
+        status: 'ACTIVE',
+      },
+    });
   });
 });

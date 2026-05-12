@@ -21,6 +21,13 @@ enum PartnerStatus {
   REJECTED
 }
 
+enum BusinessStatus {
+  PENDING
+  ACTIVE
+  SUSPENDED
+  REJECTED
+}
+
 enum ParcelStatus {
   BOOKED
   PAYMENT_PENDING
@@ -320,12 +327,13 @@ model Merchant {
   id          String         @id @default(uuid())
   publicId    String         @unique
   name        String
-  code        String         @unique
+  code        String?        @unique
   contactName String
   phone       String
   email       String?
+  status      BusinessStatus @default(PENDING)
   creditLimit Decimal        @default(0)
-  isActive    Boolean        @default(true)
+  isActive    Boolean        @default(false)
   addresses   Address[]
   users       MerchantUser[]
   createdAt   DateTime       @default(now())
@@ -367,7 +375,7 @@ model PartnerShop {
   publicId               String            @unique
   hubId                  String?
   name                   String
-  code                   String            @unique
+  code                   String?           @unique
   contactName            String
   phone                  String
   status                 PartnerStatus     @default(PENDING)
@@ -436,6 +444,7 @@ model PartnerVehicle {
 model Driver {
   id          String             @id @default(uuid())
   publicId    String             @unique
+  code        String?            @unique
   userId      String?            @unique
   fullName    String
   phone       String             @unique
